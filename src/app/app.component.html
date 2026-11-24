@@ -18,9 +18,7 @@
           <a
             [href]="'#' + link.id"
             class="relative py-1 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
-            [class.text-white]="activeSection() === link.id"
-            [class.text-neutral-400]="activeSection() !== link.id"
-            [class.hover:text-white]="activeSection() !== link.id"
+            [ngClass]="activeSection() === link.id ? 'text-white' : 'text-neutral-400 hover:text-white'"
           >
             {{ link.label }}
             <span
@@ -34,19 +32,18 @@
 
       <!-- Zone 3: 1 primary action + mobile menu button -->
       <div class="flex items-center gap-3 shrink-0">
-        <a
-          href="#contact"
-          class="hidden md:inline-flex items-center justify-center px-5 py-2.5 text-xs font-semibold bg-[#C8A97E] text-[#050505] rounded-lg hover:bg-[#d8bc93] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-white"
-        >
-          Book Consultation
-        </a>
+        <div class="hidden md:block" appMotionMagnetic [magneticStrength]="4">
+          <app-ui-button variant="primary" size="sm" href="#contact">
+            Book Consultation
+          </app-ui-button>
+        </div>
 
         <button
           type="button"
           (click)="toggleMobileMenu()"
           [attr.aria-expanded]="mobileMenuOpen()"
           aria-label="Toggle navigation menu"
-          class="md:hidden h-10 w-10 inline-flex items-center justify-center border border-white/15 rounded-lg text-neutral-200 hover:border-[#C8A97E]/60 transition-colors"
+          class="md:hidden h-10 w-10 inline-flex items-center justify-center border border-white/15 rounded-lg text-neutral-200 hover:border-[#C8A97E]/60 transition-colors cursor-pointer"
         >
           <span class="text-sm leading-none" aria-hidden="true">
             {{ mobileMenuOpen() ? '✕' : '☰' }}
@@ -58,8 +55,8 @@
     <!-- Subtle Hairline Scroll Progress Bar (Compositor scaleX only) -->
     <div class="h-[2px] w-full bg-white/5 overflow-hidden" aria-hidden="true">
       <div
-        class="h-full w-full bg-[#C8A97E] origin-left transition-transform duration-75"
-        [style.transform]="'scaleX(' + scrollProgress() + ')'"
+        #scrollProgressBar
+        class="h-full w-full bg-[#C8A97E] origin-left scale-x-0"
       ></div>
     </div>
 
@@ -76,30 +73,37 @@
           </a>
         }
         <div class="pt-2 border-t border-white/10">
-          <a
+          <app-ui-button
+            variant="primary"
+            size="md"
             href="#contact"
-            (click)="closeMobileMenu()"
-            class="inline-flex w-full items-center justify-center px-4 py-3 text-sm font-semibold bg-[#C8A97E] text-[#050505] rounded-lg"
+            [fullWidth]="true"
+            (clicked)="closeMobileMenu()"
           >
             Book Consultation
-          </a>
+          </app-ui-button>
         </div>
       </div>
     }
   </header>
 
   <main>
-    <!-- Hero Section -->
+    <!-- Hero Section (Zero-latency first-screen choreography + Motion scroll parallax) -->
     <section class="relative min-h-[88vh] flex items-end pt-28 pb-16 md:pb-24 overflow-hidden">
-      <div class="absolute inset-0 z-0 bg-[#0A0A0A]">
+      <div class="absolute inset-0 z-0 bg-[#0A0A0A] overflow-hidden">
         @if (!heroImageFailed()) {
-          <img
-            [src]="heroImage"
-            alt="Oceanfront architectural living pavilion designed by Coastal Interio"
-            referrerPolicy="no-referrer"
-            (error)="heroImageFailed.set(true)"
-            class="w-full h-full object-cover opacity-55"
-          />
+          <div appMotionParallax [parallaxDistance]="48" class="w-full h-full">
+            <img
+              #heroBackdropImg
+              [src]="heroImage"
+              alt="Oceanfront architectural living pavilion designed by Coastal Interio"
+              referrerPolicy="no-referrer"
+              fetchpriority="high"
+              decoding="async"
+              (error)="heroImageFailed.set(true)"
+              class="w-full h-full object-cover opacity-55"
+            />
+          </div>
         }
         <div
           class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/65 to-[#050505]/40"
@@ -108,45 +112,76 @@
 
       <div class="relative z-10 max-w-7xl mx-auto px-6 w-full">
         <div class="max-w-3xl">
-          <p class="text-xs md:text-sm text-[#C8A97E] tracking-wide mb-4">
+          <p
+            appMotionReveal
+            [motionImmediate]="true"
+            [motionDelay]="0"
+            [motionY]="8"
+            [motionDuration]="0.42"
+            class="text-xs md:text-sm text-[#C8A97E] tracking-wide mb-4"
+          >
             Architectural Interior Studio · Malibu · London · Lisbon
           </p>
 
           <h1
+            appMotionReveal
+            [motionImmediate]="true"
+            [motionDelay]="0.06"
+            [motionY]="10"
+            [motionDuration]="0.52"
             class="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium tracking-tight text-white leading-[1.06] [text-wrap:balance]"
           >
-            Quiet architectural spaces shaped by stone, timber, and coastal light.
+            Quiet architectural spaces shaped by
+            <em class="italic font-normal text-[#E2Cda6]">stone, timber, and coastal light.</em>
           </h1>
 
-          <p class="mt-6 text-base md:text-lg text-neutral-300 max-w-2xl leading-relaxed">
+          <p
+            appMotionReveal
+            [motionImmediate]="true"
+            [motionDelay]="0.12"
+            [motionY]="10"
+            [motionDuration]="0.52"
+            class="mt-6 text-base md:text-lg text-neutral-300 max-w-2xl leading-relaxed"
+          >
             We design and deliver turnkey residential interiors—uniting spatial architecture, bespoke
             European millwork, and curated materiality for enduring private living.
           </p>
 
-          <div class="mt-8 flex flex-wrap items-center gap-5">
-            <a
-              href="#contact"
-              class="inline-flex items-center justify-center px-6 py-3.5 bg-[#C8A97E] text-[#050505] text-sm font-semibold rounded-lg hover:bg-[#d8bc93] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-white"
-            >
-              Schedule Private Consultation
-            </a>
-            <a
-              href="#portfolio"
-              class="inline-flex items-center justify-center px-6 py-3.5 border border-white/20 text-white text-sm font-medium rounded-lg hover:bg-white/10 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
-            >
+          <div
+            appMotionReveal
+            [motionImmediate]="true"
+            [motionDelay]="0.18"
+            [motionY]="10"
+            [motionDuration]="0.52"
+            class="mt-8 flex flex-wrap items-center gap-4"
+          >
+            <div appMotionMagnetic [magneticStrength]="5">
+              <app-ui-button variant="primary" size="lg" href="#contact">
+                Schedule Private Consultation
+              </app-ui-button>
+            </div>
+            <app-ui-button variant="secondary" size="lg" href="#portfolio">
               Explore Selected Works
-            </a>
+            </app-ui-button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Studio Quantitative Proof Strip (Directly below hero) -->
+    <!-- Studio Quantitative Proof Strip -->
     <section aria-label="Studio credentials" class="border-y border-white/10 bg-[#0A0A0A]">
       <div class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-2 lg:grid-cols-4 gap-8">
-        @for (metric of metrics; track metric.label) {
-          <div class="space-y-1.5">
-            <p class="font-serif text-3xl md:text-4xl text-white font-medium tabular-nums">
+        @for (metric of metrics; track metric.label; let idx = $index) {
+          <div
+            appMotionReveal
+            [motionDelay]="idx * 0.06"
+            [motionY]="14"
+            class="space-y-1.5"
+          >
+            <p
+              [appMotionCounter]="metric.value"
+              class="font-serif text-3xl md:text-4xl text-white font-medium tabular-nums"
+            >
               {{ metric.value }}
             </p>
             <p class="text-sm font-medium text-[#C8A97E]">{{ metric.label }}</p>
@@ -158,17 +193,12 @@
 
     <!-- Section 1: Process (Interactive 4-Phase Methodology) -->
     <section id="process" class="py-20 md:py-28 max-w-7xl mx-auto px-6">
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div class="max-w-2xl">
-          <p class="text-xs text-[#C8A97E] mb-3">Design Methodology</p>
-          <h2 class="font-serif text-3xl md:text-5xl font-medium text-white tracking-tight [text-wrap:balance]">
-            From architectural survey to twilight commissioning
-          </h2>
-        </div>
-        <p class="text-sm text-neutral-400 max-w-md leading-relaxed">
-          Every commission follows a transparent 24-week architectural cadence with physical sample
-          reviews and single-studio accountability.
-        </p>
+      <div appMotionReveal class="mb-12">
+        <app-ui-section-header
+          kicker="Design Methodology"
+          title="From architectural survey to twilight commissioning"
+          description="Every commission follows a transparent 24-week architectural cadence with physical sample reviews and single-studio accountability."
+        ></app-ui-section-header>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
@@ -177,13 +207,16 @@
           @for (phase of processPhases; track phase.step; let idx = $index) {
             <button
               type="button"
+              appMotionReveal
+              [motionDelay]="idx * 0.05"
+              [motionY]="12"
               (click)="selectPhase(idx)"
-              class="text-left p-5 rounded-xl border transition-colors focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
-              [class.bg-[#121110]]="activePhaseIndex() === idx"
-              [class.border-[#C8A97E]/60]="activePhaseIndex() === idx"
-              [class.bg-[#0A0A0A]]="activePhaseIndex() !== idx"
-              [class.border-white/10]="activePhaseIndex() !== idx"
-              [class.hover:border-white/25]="activePhaseIndex() !== idx"
+              class="text-left p-5 rounded-xl border transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
+              [ngClass]="
+                activePhaseIndex() === idx
+                  ? 'bg-[#121110] border-[#C8A97E]/60'
+                  : 'bg-[#0A0A0A] border-white/10 hover:border-white/25'
+              "
             >
               <div class="flex items-center justify-between gap-4">
                 <span class="font-mono text-xs text-[#C8A97E] tabular-nums">
@@ -202,6 +235,10 @@
 
         <!-- Right: Active Phase Detail Card -->
         <div
+          #phaseDetailCard
+          appMotionReveal
+          appMotionSpotlight
+          [motionDelay]="0.12"
           class="lg:col-span-7 bg-[#0A0A0A] border border-white/10 rounded-xl p-8 md:p-10 flex flex-col justify-between gap-8"
         >
           <div class="space-y-6">
@@ -240,33 +277,36 @@
             <span class="text-xs text-neutral-400">
               Client milestone sign-off included at phase completion
             </span>
-            <a
-              href="#contact"
-              class="text-sm font-medium text-[#C8A97E] hover:text-white transition-colors whitespace-nowrap"
-            >
+            <app-ui-button variant="ghost" size="sm" href="#contact">
               Request sample project timeline →
-            </a>
+            </app-ui-button>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- Scroll-Driven Editorial Marquee Divider -->
+    <app-ui-marquee></app-ui-marquee>
+
     <!-- Section 2: Services Bento + Interactive Materiality Palette -->
-    <section id="services" class="py-20 md:py-28 border-t border-white/10 bg-[#080808]">
+    <section id="services" class="py-20 md:py-28 bg-[#080808]">
       <div class="max-w-7xl mx-auto px-6">
-        <div class="max-w-2xl mb-12">
-          <p class="text-xs text-[#C8A97E] mb-3">Studio Capabilities</p>
-          <h2 class="font-serif text-3xl md:text-5xl font-medium text-white tracking-tight [text-wrap:balance]">
-            Integrated interior architecture and tactile craft
-          </h2>
+        <div appMotionReveal class="mb-12">
+          <app-ui-section-header
+            kicker="Studio Capabilities"
+            title="Integrated interior architecture and tactile craft"
+          ></app-ui-section-header>
         </div>
 
         <!-- Asymmetric Bento Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          @for (service of services; track service.index) {
+          @for (service of services; track service.index; let idx = $index) {
             <article
-              class="bg-[#0E0E0E] border border-white/10 rounded-xl p-7 md:p-8 flex flex-col justify-between gap-6"
-              [class.md:col-span-2]="service.featured"
+              appMotionReveal
+              appMotionSpotlight
+              [motionDelay]="idx * 0.07"
+              class="bg-[#0E0E0E] border border-white/10 rounded-xl p-7 md:p-8 flex flex-col justify-between gap-6 transition-colors hover:border-white/20"
+              [ngClass]="service.featured ? 'md:col-span-2' : ''"
             >
               <div class="space-y-4">
                 <div class="flex items-center justify-between gap-4 text-xs text-neutral-400">
@@ -297,6 +337,8 @@
 
         <!-- Interactive Materiality & Finish Inspector -->
         <div
+          appMotionReveal
+          [motionDelay]="0.1"
           class="mt-10 bg-[#0E0E0E] border border-white/10 rounded-xl p-6 md:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center"
         >
           <div class="lg:col-span-5 space-y-4">
@@ -314,14 +356,12 @@
                 <button
                   type="button"
                   (click)="selectMaterial(idx)"
-                  class="px-3.5 py-2.5 text-left text-xs font-medium rounded-lg border transition-colors truncate focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
-                  [class.bg-[#C8A97E]]="activeMaterialIndex() === idx"
-                  [class.text-[#050505]]="activeMaterialIndex() === idx"
-                  [class.border-[#C8A97E]]="activeMaterialIndex() === idx"
-                  [class.bg-[#141414]]="activeMaterialIndex() !== idx"
-                  [class.text-neutral-300]="activeMaterialIndex() !== idx"
-                  [class.border-white/10]="activeMaterialIndex() !== idx"
-                  [class.hover:border-white/25]="activeMaterialIndex() !== idx"
+                  class="px-3.5 py-2.5 text-left text-xs font-medium rounded-lg border transition-colors truncate cursor-pointer focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
+                  [ngClass]="
+                    activeMaterialIndex() === idx
+                      ? 'bg-[#C8A97E] text-[#050505] border-[#C8A97E]'
+                      : 'bg-[#141414] text-neutral-300 border-white/10 hover:border-white/25'
+                  "
                 >
                   {{ mat.name }}
                 </button>
@@ -329,9 +369,14 @@
             </div>
           </div>
 
-          <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
+          <div
+            #materialDetailCard
+            class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-12 gap-6 items-center"
+          >
             <div
-              class="sm:col-span-5 h-48 sm:h-56 rounded-lg border border-white/10"
+              appMotionTilt
+              [maxTiltDeg]="4"
+              class="sm:col-span-5 h-48 sm:h-56 rounded-lg border border-white/10 shadow-lg"
               [style.background]="activeMaterial().swatchStyle"
               role="img"
               [attr.aria-label]="activeMaterial().name + ' material surface sample'"
@@ -355,66 +400,90 @@
                   <span class="text-neutral-200">{{ activeMaterial().idealPairing }}</span>
                 </div>
               </div>
+
+              <div class="pt-2">
+                <app-ui-button
+                  variant="secondary"
+                  size="sm"
+                  href="#contact"
+                  (clicked)="applyMaterialToConsultation()"
+                >
+                  Use Finish in Consultation Brief
+                </app-ui-button>
+              </div>
             </div>
           </div>
+        </div>
+
+        <!-- Split-Screen Daylight vs Twilight Architectural Comparison -->
+        <div
+          appMotionReveal
+          [motionDelay]="0.12"
+          class="mt-10 bg-[#0E0E0E] border border-white/10 rounded-xl p-6 md:p-8"
+        >
+          <app-ui-split-compare
+            [leftImage]="splitCompareLeft"
+            [rightImage]="splitCompareRight"
+            leftTag="Coastal Daylight Study"
+            leftLabel="Honed Quartzite & Fluted Walnut"
+            rightTag="Twilight Hearth Study"
+            rightLabel="Smoked Oak & Carved Limestone"
+          ></app-ui-split-compare>
         </div>
       </div>
     </section>
 
-    <!-- Section 3: Portfolio Showcase (Filterable + Lightbox Modal) -->
+    <!-- Section 3: Portfolio Showcase (Reusable Filter Tabs + Lightbox Modal) -->
     <section id="portfolio" class="py-20 md:py-28 max-w-7xl mx-auto px-6">
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-        <div>
-          <p class="text-xs text-[#C8A97E] mb-3">Selected Commissions</p>
-          <h2 class="font-serif text-3xl md:text-5xl font-medium text-white tracking-tight">
-            Completed Residences
-          </h2>
-        </div>
+      <div
+        appMotionReveal
+        class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10"
+      >
+        <app-ui-section-header
+          kicker="Selected Commissions"
+          title="Completed Residences"
+        ></app-ui-section-header>
 
-        <!-- Interactive Filter Controls -->
-        <div
-          role="group"
-          aria-label="Filter portfolio by category"
-          class="inline-flex flex-wrap items-center gap-1 p-1 bg-[#111111] border border-white/10 rounded-lg"
-        >
-          @for (cat of portfolioCategories; track cat) {
-            <button
-              type="button"
-              (click)="setCategory(cat)"
-              class="px-3.5 py-2 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
-              [class.bg-[#C8A97E]]="selectedCategory() === cat"
-              [class.text-[#050505]]="selectedCategory() === cat"
-              [class.text-neutral-300]="selectedCategory() !== cat"
-              [class.hover:text-white]="selectedCategory() !== cat"
-            >
-              {{ cat }}
-            </button>
-          }
-        </div>
+        <app-ui-tabs
+          [options]="portfolioTabOptions"
+          [activeValue]="selectedCategory()"
+          ariaLabel="Filter portfolio by category"
+          (valueChange)="setCategory($event)"
+        ></app-ui-tabs>
       </div>
 
       <!-- Gallery Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @for (project of filteredProjects(); track project.id; let idx = $index) {
           <article
+            appMotionReveal
+            appMotionSpotlight
+            appMotionTilt
+            [maxTiltDeg]="1.6"
+            [motionDelay]="idx * 0.06"
             class="group bg-[#0A0A0A] border border-white/10 rounded-xl overflow-hidden flex flex-col justify-between transition-colors hover:border-[#C8A97E]/45"
-            [class.lg:col-span-2]="idx === 0 && filteredProjects().length > 2"
+            [ngClass]="idx === 0 && filteredProjects().length > 2 ? 'lg:col-span-2' : ''"
           >
             <button
               type="button"
               (click)="openLightbox(project)"
-              class="text-left w-full flex flex-col h-full focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
+              class="text-left w-full flex flex-col h-full cursor-pointer focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
             >
               <div
+                appMotionPanelWipe
+                [wipeDelay]="idx * 0.05"
                 class="relative w-full overflow-hidden bg-[#141414]"
-                [class.aspect-[16/10]]="idx === 0 && filteredProjects().length > 2"
-                [class.aspect-[4/3]]="!(idx === 0 && filteredProjects().length > 2)"
+                [ngClass]="idx === 0 && filteredProjects().length > 2 ? 'aspect-[16/10]' : 'aspect-[4/3]'"
               >
                 @if (!failedProjectImages()[project.id]) {
                   <img
+                    appMotionMediaReveal
+                    [mediaDelay]="idx * 0.05"
                     [src]="project.image"
                     [alt]="project.title"
                     referrerPolicy="no-referrer"
+                    loading="lazy"
+                    decoding="async"
                     (error)="markProjectImageFailed(project.id)"
                     class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                   />
@@ -465,11 +534,11 @@
       </div>
     </section>
 
-    <!-- Section 4: Client Testimonials (Adjacent to Portfolio Proof) -->
+    <!-- Section 4: Client Testimonials -->
     <section id="testimonials" class="py-20 md:py-28 border-t border-white/10 bg-[#080808]">
       <div class="max-w-7xl mx-auto px-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          <div class="lg:col-span-4 space-y-5">
+          <div appMotionReveal class="lg:col-span-4 space-y-5">
             <p class="text-xs text-[#C8A97E]">Client Perspectives</p>
             <h2 class="font-serif text-3xl md:text-4xl font-medium text-white tracking-tight [text-wrap:balance]">
               Measured outcomes from commissioned homes
@@ -480,11 +549,12 @@
                 <button
                   type="button"
                   (click)="selectTestimonial(idx)"
-                  class="text-left p-4 rounded-lg border transition-colors focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
-                  [class.bg-[#141311]]="activeTestimonialIndex() === idx"
-                  [class.border-[#C8A97E]/60]="activeTestimonialIndex() === idx"
-                  [class.bg-[#0D0D0D]]="activeTestimonialIndex() !== idx"
-                  [class.border-white/10]="activeTestimonialIndex() !== idx"
+                  class="text-left p-4 rounded-lg border transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
+                  [ngClass]="
+                    activeTestimonialIndex() === idx
+                      ? 'bg-[#141311] border-[#C8A97E]/60'
+                      : 'bg-[#0D0D0D] border-white/10 hover:border-white/20'
+                  "
                 >
                   <p class="text-sm font-medium text-white">{{ item.clientName }}</p>
                   <p class="text-xs text-neutral-400 mt-0.5">{{ item.location }}</p>
@@ -494,6 +564,10 @@
           </div>
 
           <div
+            #testimonialQuoteCard
+            appMotionReveal
+            appMotionSpotlight
+            [motionDelay]="0.1"
             class="lg:col-span-8 bg-[#0E0E0E] border border-white/10 rounded-xl p-8 md:p-12 space-y-8"
           >
             <div class="text-xs text-neutral-400 flex flex-wrap items-center gap-2">
@@ -523,10 +597,10 @@
       </div>
     </section>
 
-    <!-- Section 5: Consultation Booking & Project Inquiry -->
+    <!-- Section 5: Consultation Booking with Reusable Custom Dropdowns -->
     <section id="contact" class="py-20 md:py-28 max-w-7xl mx-auto px-6">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        <div class="lg:col-span-5 space-y-6">
+        <div appMotionReveal class="lg:col-span-5 space-y-6">
           <p class="text-xs text-[#C8A97E]">Private Commissions</p>
           <h2 class="font-serif text-3xl md:text-5xl font-medium text-white tracking-tight [text-wrap:balance]">
             Begin a spatial dialogue with our studio
@@ -543,12 +617,21 @@
             </div>
             <div>
               <p class="text-xs text-neutral-400">Direct Architectural Desk</p>
-              <a
-                href="mailto:studio@coastalinterio.com"
-                class="text-[#C8A97E] hover:text-white transition-colors mt-1 inline-block"
-              >
-                studio&#64;coastalinterio.com
-              </a>
+              <div class="mt-1 flex items-center gap-3">
+                <a
+                  href="mailto:studio@coastalinterio.com"
+                  class="text-[#C8A97E] hover:text-white transition-colors"
+                >
+                  studio&#64;coastalinterio.com
+                </a>
+                <button
+                  type="button"
+                  (click)="copyStudioEmail()"
+                  class="text-xs text-neutral-400 hover:text-white transition-colors underline underline-offset-4 cursor-pointer"
+                >
+                  Copy
+                </button>
+              </div>
             </div>
             <div>
               <p class="text-xs text-neutral-400">Response Window</p>
@@ -557,14 +640,19 @@
           </div>
         </div>
 
-        <div class="lg:col-span-7 bg-[#0A0A0A] border border-white/10 rounded-xl p-6 md:p-10">
+        <div
+          appMotionReveal
+          [motionDelay]="0.1"
+          class="lg:col-span-7 bg-[#0A0A0A] border border-white/10 rounded-xl p-6 md:p-10"
+        >
           @if (!inquirySubmitted()) {
             <form [formGroup]="inquiryForm" (ngSubmit)="submitInquiry()" class="space-y-6" novalidate>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label for="fullName" class="block text-xs font-medium text-neutral-300 mb-2">
-                    Full Name
-                  </label>
+                <app-ui-field
+                  label="Full Name"
+                  forId="fullName"
+                  [errorText]="getFieldError('fullName')"
+                >
                   <input
                     id="fullName"
                     type="text"
@@ -572,15 +660,13 @@
                     placeholder="Claire Lindqvist"
                     class="w-full px-4 py-3 bg-[#121212] border border-white/10 rounded-lg text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-[#C8A97E]"
                   />
-                  @if (isFieldInvalid('fullName')) {
-                    <p class="mt-1.5 text-xs text-amber-400">Please enter your full name.</p>
-                  }
-                </div>
+                </app-ui-field>
 
-                <div>
-                  <label for="email" class="block text-xs font-medium text-neutral-300 mb-2">
-                    Email Address
-                  </label>
+                <app-ui-field
+                  label="Email Address"
+                  forId="email"
+                  [errorText]="getFieldError('email')"
+                >
                   <input
                     id="email"
                     type="email"
@@ -588,49 +674,48 @@
                     placeholder="claire@residence.com"
                     class="w-full px-4 py-3 bg-[#121212] border border-white/10 rounded-lg text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-[#C8A97E]"
                   />
-                  @if (isFieldInvalid('email')) {
-                    <p class="mt-1.5 text-xs text-amber-400">Please provide a valid email address.</p>
-                  }
-                </div>
+                </app-ui-field>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label for="residenceType" class="block text-xs font-medium text-neutral-300 mb-2">
-                    Project Category
-                  </label>
-                  <select
-                    id="residenceType"
+                <app-ui-field label="Project Category" forId="residenceType">
+                  <app-ui-select
+                    inputId="residenceType"
                     formControlName="residenceType"
-                    class="w-full px-4 py-3 bg-[#121212] border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-[#C8A97E]"
-                  >
-                    <option value="Coastal Villa">Coastal Villa</option>
-                    <option value="Urban Penthouse">Urban Penthouse</option>
-                    <option value="Private Residence">Private Residence</option>
-                    <option value="Hospitality">Boutique Hospitality</option>
-                  </select>
-                </div>
+                    [options]="residenceTypeOptions"
+                    placeholder="Select project category"
+                  ></app-ui-select>
+                </app-ui-field>
 
-                <div>
-                  <label for="scaleSqFt" class="block text-xs font-medium text-neutral-300 mb-2">
-                    Estimated Scale
-                  </label>
-                  <select
-                    id="scaleSqFt"
+                <app-ui-field label="Estimated Scale" forId="scaleSqFt">
+                  <app-ui-select
+                    inputId="scaleSqFt"
                     formControlName="scaleSqFt"
-                    class="w-full px-4 py-3 bg-[#121212] border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-[#C8A97E]"
-                  >
-                    <option value="2,000 – 4,000 sq ft">2,000 – 4,000 sq ft</option>
-                    <option value="4,000 – 7,500 sq ft">4,000 – 7,500 sq ft</option>
-                    <option value="7,500+ sq ft">7,500+ sq ft Estate</option>
-                  </select>
-                </div>
+                    [options]="scaleOptions"
+                    placeholder="Select floor area"
+                  ></app-ui-select>
+                </app-ui-field>
               </div>
 
-              <div>
-                <label for="projectNotes" class="block text-xs font-medium text-neutral-300 mb-2">
-                  Architectural Context & Target Timeline
-                </label>
+              <app-ui-field
+                label="Preferred Material Direction"
+                forId="materialDirection"
+                hint="Pre-populated if you select a finish from the Material Palette Inspector above."
+              >
+                <app-ui-select
+                  inputId="materialDirection"
+                  formControlName="materialDirection"
+                  [options]="materialDirectionOptions"
+                  [searchable]="true"
+                  placeholder="Select material palette"
+                ></app-ui-select>
+              </app-ui-field>
+
+              <app-ui-field
+                label="Architectural Context & Target Timeline"
+                forId="projectNotes"
+                [errorText]="getFieldError('projectNotes')"
+              >
                 <textarea
                   id="projectNotes"
                   rows="4"
@@ -638,28 +723,20 @@
                   placeholder="Share location, architectural stage (new build or renovation), and preferred material sensibility..."
                   class="w-full px-4 py-3 bg-[#121212] border border-white/10 rounded-lg text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-[#C8A97E] custom-scroll"
                 ></textarea>
-                @if (isFieldInvalid('projectNotes')) {
-                  <p class="mt-1.5 text-xs text-amber-400">
-                    Please include a brief summary of your residence or timeline (min. 12 characters).
-                  </p>
-                }
-              </div>
+              </app-ui-field>
 
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
                 <p class="text-xs text-neutral-400">
                   Initial 45-minute architectural review is complimentary.
                 </p>
-                <button
-                  type="submit"
-                  class="px-6 py-3.5 bg-[#C8A97E] text-[#050505] text-sm font-semibold rounded-lg hover:bg-[#d8bc93] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-white"
-                >
+                <app-ui-button type="submit" variant="primary" size="md">
                   Request Consultation
-                </button>
+                </app-ui-button>
               </div>
             </form>
           } @else {
-            <div class="py-8 space-y-6">
-              <div class="space-y-2">
+            <div class="py-6 space-y-6">
+              <div class="space-y-3">
                 <p class="text-xs text-[#C8A97E]">Consultation Request Logged</p>
                 <h3 class="font-serif text-3xl text-white">
                   Thank you, {{ submittedSummary()?.fullName }}.
@@ -667,18 +744,17 @@
                 <p class="text-sm text-neutral-300 leading-relaxed max-w-lg">
                   Our architectural desk has received your inquiry for a
                   <span class="text-white">{{ submittedSummary()?.residenceType }}</span>
-                  ({{ submittedSummary()?.scaleSqFt }}). A principal architect will follow up at
-                  <span class="text-white">{{ submittedSummary()?.email }}</span> within 2 business days.
+                  ({{ submittedSummary()?.scaleSqFt }},
+                  <span class="text-white">{{ submittedSummary()?.materialDirection }}</span>). A
+                  principal architect will follow up at
+                  <span class="text-white">{{ submittedSummary()?.email }}</span> within 2 business
+                  days.
                 </p>
               </div>
 
-              <button
-                type="button"
-                (click)="resetInquiry()"
-                class="px-5 py-2.5 text-xs font-medium border border-white/15 text-neutral-200 rounded-lg hover:border-[#C8A97E]/60 hover:text-white transition-colors"
-              >
+              <app-ui-button variant="secondary" size="sm" (clicked)="resetInquiry()">
                 Submit Another Inquiry
-              </button>
+              </app-ui-button>
             </div>
           }
         </div>
@@ -707,7 +783,7 @@
         <button
           type="button"
           (click)="scrollToTop()"
-          class="text-[#C8A97E] hover:text-white transition-colors"
+          class="text-[#C8A97E] hover:text-white transition-colors cursor-pointer"
         >
           Back to top ↑
         </button>
@@ -725,4 +801,11 @@
     (prev)="stepLightbox(-1)"
     (inquire)="inquireFromLightbox($event)"
   ></app-lightbox-modal>
+
+  <!-- Reusable Toast Notification -->
+  <app-ui-toast
+    [title]="toastTitle()"
+    [message]="toastMessage()"
+    (dismiss)="dismissToast()"
+  ></app-ui-toast>
 </div>
