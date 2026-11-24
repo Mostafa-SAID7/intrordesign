@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* ==========================================================================
+   Modern Arrow-Free Scrollbar System
+   ========================================================================== */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 169, 126, 0.38) #050505;
+  background-color: #050505;
+  color: #e5e2dc;
+  font-family: var(--font-sans);
+}
+
+/* WebKit / Chromium / Safari global scrollbar — strictly no inner arrows */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-button,
+::-webkit-scrollbar-button:single-button,
+::-webkit-scrollbar-button:double-button,
+::-webkit-scrollbar-button:start,
+::-webkit-scrollbar-button:end,
+::-webkit-scrollbar-button:increment,
+::-webkit-scrollbar-button:decrement {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+  appearance: none;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+  border-left: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(200, 169, 126, 0.34) 0%,
+    rgba(200, 169, 126, 0.56) 100%
+  );
+  border-radius: 9999px;
+  border: 1.5px solid #050505;
+  background-clip: padding-box;
+  transition: background 180ms ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 169, 126, 0.82);
+  border: 1px solid #050505;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #c8a97e;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Compact inner scrollbar for modals, drawers, and horizontal trays */
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 169, 126, 0.4) rgba(255, 255, 255, 0.03);
+  overscroll-behavior: contain;
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scroll::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 9999px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: rgba(200, 169, 126, 0.42);
+  border-radius: 9999px;
+  border: none;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 169, 126, 0.78);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
