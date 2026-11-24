@@ -3,9 +3,8 @@
 
 @layer base {
   :root {
-    --font-display: 'Cormorant Garamond', Georgia, serif;
-    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
     --bg-obsidian: #050507;
     --surface-glass: #17171b;
     --rim-hairline: rgba(255, 255, 255, 0.11);
@@ -18,8 +17,6 @@
     font-family: var(--font-sans);
     background-color: var(--bg-obsidian);
     color: #ededf1;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
   }
 
   body {
@@ -28,37 +25,60 @@
   }
 }
 
-/* Modern arrow-free smoked-glass scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Centralized arrow-free smoked-glass scrollbar across document, lightbox, drawers & dropdowns */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-::-webkit-scrollbar-button {
-  display: none;
-  width: 0;
-  height: 0;
+html::-webkit-scrollbar-button,
+html::-webkit-scrollbar-button:single-button,
+html::-webkit-scrollbar-button:double-button,
+html::-webkit-scrollbar-button:vertical:start,
+html::-webkit-scrollbar-button:vertical:end,
+body::-webkit-scrollbar-button,
+*::-webkit-scrollbar-button,
+*::-webkit-scrollbar-button:single-button,
+*::-webkit-scrollbar-button:double-button,
+*::-webkit-scrollbar-button:vertical:start,
+*::-webkit-scrollbar-button:vertical:end,
+*::-webkit-scrollbar-button:horizontal:start,
+*::-webkit-scrollbar-button:horizontal:end {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-::-webkit-scrollbar-track {
+html::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track {
   background: transparent;
 }
 
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(185, 171, 255, 0.18));
+html::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(185, 171, 255, 0.24));
   border-radius: 9999px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(185, 171, 255, 0.55), rgba(54, 214, 126, 0.42));
-  border: 1px solid transparent;
-  background-clip: padding-box;
+html::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(185, 171, 255, 0.65), rgba(54, 214, 126, 0.5));
 }
 
-::-webkit-scrollbar-corner {
+html::-webkit-scrollbar-corner,
+*::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(185, 171, 255, 0.28) transparent;
+  }
 }
 
 /* Smoked-glass slab surfaces (GPU-composited hover only) */
@@ -89,17 +109,19 @@
 
 .font-display {
   font-family: var(--font-display);
+  font-variation-settings: 'SOFT' 35, 'WONK' 1;
 }
 
 .font-mono-tabular {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+  letter-spacing: -0.01em;
 }
 
-/* Defer offscreen layout/paint for faster initial boot and smooth scrolling */
+/* Anchor clearance under floating header without paint containment clipping dropdowns */
 .lazy-section {
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 580px;
+  scroll-margin-top: 88px;
 }
 
 /* GPU-only scroll reveal */

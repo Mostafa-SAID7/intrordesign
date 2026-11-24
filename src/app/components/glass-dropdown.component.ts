@@ -18,19 +18,15 @@ export interface DropdownOption {
   hint?: string;
 }
 
-interface MenuCoords {
-  top: number | null;
-  bottom: number | null;
-  left: number;
-  minWidth: number;
-  maxHeight: number;
-}
-
 @Component({
   selector: 'app-glass-dropdown',
   standalone: true,
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'relative block w-full',
+    '[class.z-50]': 'isOpen()',
+  },
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -77,12 +73,11 @@ interface MenuCoords {
       @if (isOpen()) {
         <ul
           role="listbox"
-          class="fixed z-[70] w-max max-w-[min(360px,calc(100vw-24px))] overflow-y-auto rounded-xl border border-white/15 bg-[#15151c]/95 p-1.5 backdrop-blur-xl shadow-[0_22px_54px_rgba(0,0,0,0.82),inset_0_1px_0_rgba(255,255,255,0.16)]"
-          [style.top.px]="menuCoords().top"
-          [style.bottom.px]="menuCoords().bottom"
-          [style.left.px]="menuCoords().left"
-          [style.minWidth.px]="menuCoords().minWidth"
-          [style.maxHeight.px]="menuCoords().maxHeight"
+          class="absolute z-50 min-w-full w-max max-w-[min(360px,calc(100vw-24px))] max-h-64 overflow-y-auto rounded-xl border border-white/15 bg-[#15151c]/95 p-1.5 backdrop-blur-xl shadow-[0_22px_54px_rgba(0,0,0,0.82),inset_0_1px_0_rgba(255,255,255,0.16)]"
+          [ngClass]="[
+            openUpward() ? 'bottom-full mb-2' : 'top-full mt-2',
+            alignRight() ? 'right-0' : 'left-0'
+          ]"
         >
           @for (option of options; track option.value) {
             <li role="option" [attr.aria-selected]="option.value === value()">
@@ -119,13 +114,8 @@ export class GlassDropdownComponent implements ControlValueAccessor {
   readonly isOpen = signal(false);
   readonly value = signal<string>('');
   readonly disabled = signal(false);
-  readonly menuCoords = signal<MenuCoords>({
-    top: 0,
-    bottom: null,
-    left: 0,
-    minWidth: 200,
-    maxHeight: 260,
-  });
+  readonly openUpward = signal(false);
+  readonly alignRight = signal(false);
 
   private onChange: (val: string) => void = () => {};
   private onTouched: () => void = () => {};
@@ -137,7 +127,7 @@ export class GlassDropdownComponent implements ControlValueAccessor {
   toggle(): void {
     if (this.disabled()) return;
     if (!this.isOpen()) {
-      this.updateMenuPosition();
+      this.updatePlacement();
       this.isOpen.set(true);
     } else {
       this.isOpen.set(false);
@@ -182,43 +172,23 @@ export class GlassDropdownComponent implements ControlValueAccessor {
     }
   }
 
-  @HostListener('window:scroll')
   @HostListener('window:resize')
-  onViewportChange(): void {
+  onViewportResize(): void {
     if (this.isOpen()) {
-      this.updateMenuPosition();
+      this.updatePlacement();
     }
   }
 
-  private updateMenuPosition(): void {
+  private updatePlacement(): void {
     const btn = this.triggerBtnRef?.nativeElement;
     if (!btn) return;
 
     const rect = btn.getBoundingClientRect();
-    const gap = 8;
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const spaceBelow = vh - rect.bottom - 12;
+    const spaceBelow = window.innerHeight - rect.bottom - 12;
     const spaceAbove = rect.top - 12;
-    const estimatedMenuWidth = Math.max(rect.width, 230);
-    const clampedLeft = Math.max(12, Math.min(rect.left, vw - estimatedMenuWidth - 12));
+    this.openUpward.set(spaceBelow < 220 && spaceAbove > spaceBelow);
 
-    if (spaceBelow < 210 && spaceAbove > spaceBelow) {
-      this.menuCoords.set({
-        top: null,
-        bottom: vh - rect.top + gap,
-        left: clampedLeft,
-        minWidth: rect.width,
-        maxHeight: Math.min(264, Math.max(140, spaceAbove)),
-      });
-    } else {
-      this.menuCoords.set({
-        top: rect.bottom + gap,
-        bottom: null,
-        left: clampedLeft,
-        minWidth: rect.width,
-        maxHeight: Math.min(264, Math.max(140, spaceBelow)),
-      });
-    }
+    const spaceRight = window.innerWidth - rect.left - 12;
+    this.alignRight.set(spaceRight < 280 && rect.right > 260);
   }
 }

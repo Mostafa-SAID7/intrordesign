@@ -36,7 +36,7 @@
       </div>
 
       <!-- Filter & Sort Bar -->
-      <div class="smoked-slab mt-8 rounded-2xl p-4 sm:p-5">
+      <div class="smoked-slab relative z-20 mt-8 rounded-2xl p-4 sm:p-5">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <!-- Typology Tabs -->
           <div
@@ -151,7 +151,7 @@
 
       <!-- Residence Cards Grid -->
       @if (filteredListings().length > 0) {
-        <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div class="relative z-10 mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           @for (item of filteredListings(); track item.id; let i = $index) {
             <article
               appReveal
@@ -373,7 +373,7 @@
     <div class="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-10">
       <div class="smoked-slab rounded-[24px] p-6 sm:p-10 lg:p-12">
         <div class="grid gap-10 lg:grid-cols-12">
-          <div class="lg:col-span-6">
+          <div class="relative z-20 lg:col-span-6">
             <div class="flex items-center gap-2">
               <p class="text-xs font-medium uppercase tracking-[0.18em] text-white/45">
                 Interactive Lease Calculator
@@ -751,98 +751,100 @@
     (click)="closeListingModal()"
   >
     <div
-      class="smoked-slab relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl"
+      class="smoked-slab relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl"
       (click)="$event.stopPropagation()"
     >
       <button
         type="button"
         (click)="closeListingModal()"
         aria-label="Close residence details"
-        class="absolute right-4 top-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-[#050507]/85 text-white transition-colors hover:border-[#b9abff] hover:text-[#b9abff]"
+        class="absolute right-4 top-4 z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-[#050507]/85 text-white transition-colors hover:border-[#b9abff] hover:text-[#b9abff]"
       >
         ✕
       </button>
 
-      <div class="aspect-[16/9] w-full overflow-hidden bg-[#121217]">
-        <img
-          [src]="activeListing()!.image"
-          [alt]="activeListing()!.title"
-          referrerPolicy="no-referrer"
-          class="h-full w-full object-cover"
-        />
-      </div>
+      <div class="min-h-0 flex-1 overflow-y-auto">
+        <div class="aspect-[16/9] w-full overflow-hidden bg-[#121217]">
+          <img
+            [src]="activeListing()!.image"
+            [alt]="activeListing()!.title"
+            referrerPolicy="no-referrer"
+            class="h-full w-full object-cover"
+          />
+        </div>
 
-      <div class="p-6 sm:p-9">
-        <div class="flex flex-wrap items-baseline justify-between gap-4">
-          <div>
-            <div class="flex flex-wrap items-center gap-2 text-xs text-white/50">
-              <span>{{ activeListing()!.category }}</span>
-              <span aria-hidden="true">·</span>
-              <span>{{ activeListing()!.neighborhood }}</span>
-              <span aria-hidden="true">·</span>
-              <span class="text-[#36d67e]">{{ activeListing()!.availability }}</span>
+        <div class="p-6 sm:p-9">
+          <div class="flex flex-wrap items-baseline justify-between gap-4">
+            <div>
+              <div class="flex flex-wrap items-center gap-2 text-xs text-white/50">
+                <span>{{ activeListing()!.category }}</span>
+                <span aria-hidden="true">·</span>
+                <span>{{ activeListing()!.neighborhood }}</span>
+                <span aria-hidden="true">·</span>
+                <span class="text-[#36d67e]">{{ activeListing()!.availability }}</span>
+              </div>
+              <h3 class="font-display mt-2 text-3xl font-medium text-white sm:text-4xl">
+                {{ activeListing()!.title }}
+              </h3>
             </div>
-            <h3 class="font-display mt-2 text-3xl font-medium text-white sm:text-4xl">
-              {{ activeListing()!.title }}
-            </h3>
+
+            <div class="text-right">
+              <p class="font-mono-tabular text-2xl font-semibold text-white sm:text-3xl">
+                ${{ activeListing()!.monthlyRent | number
+                }}<span class="text-sm font-normal text-white/60"> / mo</span>
+              </p>
+              <p class="font-mono-tabular text-xs text-white/50">
+                Deposit: {{ activeListing()!.depositMonths }}× monthly rent
+              </p>
+            </div>
           </div>
 
-          <div class="text-right">
-            <p class="font-mono-tabular text-2xl font-semibold text-white sm:text-3xl">
-              ${{ activeListing()!.monthlyRent | number
-              }}<span class="text-sm font-normal text-white/60"> / mo</span>
-            </p>
-            <p class="font-mono-tabular text-xs text-white/50">
-              Deposit: {{ activeListing()!.depositMonths }}× monthly rent
-            </p>
+          <p class="font-mono-tabular mt-4 text-xs text-[#b9abff]">
+            {{ activeListing()!.beds }} Beds · {{ activeListing()!.baths }} Baths ·
+            {{ activeListing()!.sqft | number }} sq ft · {{ activeListing()!.parkingSpaces }} EV
+            Parking · {{ activeListing()!.petFriendly ? 'Pet Friendly' : 'No Pets' }}
+          </p>
+
+          <p class="mt-4 text-sm leading-relaxed text-white/70 sm:text-base">
+            {{ activeListing()!.summary }}
+          </p>
+
+          <div class="mt-6 grid gap-5 border-t border-white/10 pt-6 sm:grid-cols-2">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.16em] text-white/45">
+                Architectural Highlights
+              </p>
+              <p class="mt-2 text-sm text-white/85">
+                {{ activeListing()!.highlights.join(' · ') }}
+              </p>
+            </div>
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.16em] text-white/45">
+                Included Amenities
+              </p>
+              <p class="mt-2 text-sm text-white/85">
+                {{ activeListing()!.amenities.join(' · ') }}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <p class="font-mono-tabular mt-4 text-xs text-[#b9abff]">
-          {{ activeListing()!.beds }} Beds · {{ activeListing()!.baths }} Baths ·
-          {{ activeListing()!.sqft | number }} sq ft · {{ activeListing()!.parkingSpaces }} EV
-          Parking · {{ activeListing()!.petFriendly ? 'Pet Friendly' : 'No Pets' }}
-        </p>
+          <div class="mt-7 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6">
+            <button
+              type="button"
+              (click)="toggleSaved(activeListing()!.id)"
+              class="rounded-xl border border-white/20 px-5 py-2.5 text-xs font-medium text-white transition-colors hover:border-[#b9abff] hover:text-[#b9abff]"
+            >
+              {{ isSaved(activeListing()!.id) ? 'Saved in Shortlist' : 'Save to Shortlist' }}
+            </button>
 
-        <p class="mt-4 text-sm leading-relaxed text-white/70 sm:text-base">
-          {{ activeListing()!.summary }}
-        </p>
-
-        <div class="mt-6 grid gap-5 border-t border-white/10 pt-6 sm:grid-cols-2">
-          <div>
-            <p class="text-[11px] uppercase tracking-[0.16em] text-white/45">
-              Architectural Highlights
-            </p>
-            <p class="mt-2 text-sm text-white/85">
-              {{ activeListing()!.highlights.join(' · ') }}
-            </p>
+            <button
+              type="button"
+              (click)="bookResidence(activeListing()!)"
+              class="rounded-xl bg-[#ececf0] px-6 py-3 text-xs font-semibold text-[#09090d] transition-colors hover:bg-[#36d67e] hover:text-[#04140a]"
+            >
+              Schedule Private Viewing
+            </button>
           </div>
-          <div>
-            <p class="text-[11px] uppercase tracking-[0.16em] text-white/45">
-              Included Amenities
-            </p>
-            <p class="mt-2 text-sm text-white/85">
-              {{ activeListing()!.amenities.join(' · ') }}
-            </p>
-          </div>
-        </div>
-
-        <div class="mt-7 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6">
-          <button
-            type="button"
-            (click)="toggleSaved(activeListing()!.id)"
-            class="rounded-xl border border-white/20 px-5 py-2.5 text-xs font-medium text-white transition-colors hover:border-[#b9abff] hover:text-[#b9abff]"
-          >
-            {{ isSaved(activeListing()!.id) ? 'Saved in Shortlist' : 'Save to Shortlist' }}
-          </button>
-
-          <button
-            type="button"
-            (click)="bookResidence(activeListing()!)"
-            class="rounded-xl bg-[#ececf0] px-6 py-3 text-xs font-semibold text-[#09090d] transition-colors hover:bg-[#36d67e] hover:text-[#04140a]"
-          >
-            Schedule Private Viewing
-          </button>
         </div>
       </div>
     </div>
