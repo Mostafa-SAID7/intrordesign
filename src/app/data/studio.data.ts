@@ -1,338 +1,355 @@
-export interface StudioMetric {
+export interface RentalMetric {
   value: string;
   label: string;
   context: string;
 }
 
-export interface ProcessPhase {
+export interface LeasingStep {
   step: string;
   title: string;
-  duration: string;
-  summary: string;
-  deliverables: string[];
-  leadDiscipline: string;
-}
-
-export interface ServiceOffering {
-  index: string;
-  title: string;
-  scope: string;
+  timing: string;
   description: string;
-  featured?: boolean;
-  outcomes: string[];
+  deliverable: string;
 }
 
-export interface MaterialSwatch {
-  id: string;
-  name: string;
-  origin: string;
-  finish: string;
-  patinaNote: string;
-  idealPairing: string;
-  swatchStyle: string;
+export interface RentalService {
+  code: string;
+  title: string;
+  span: 'wide' | 'standard';
+  summary: string;
+  highlights: string[];
+  tooltip: string;
 }
 
-export type PortfolioCategory = 'All' | 'Coastal Villas' | 'Urban Penthouses' | 'Hospitality';
+export interface RentalStandard {
+  term: string;
+  definition: string;
+}
 
-export interface PortfolioProject {
+export type PropertyCategory = 'Waterfront Villas' | 'Penthouse Lofts' | 'Modern Pavilions';
+
+export interface RentalListing {
   id: string;
   title: string;
-  category: Exclude<PortfolioCategory, 'All'>;
-  location: string;
-  areaSqFt: string;
-  year: string;
-  duration: string;
+  category: PropertyCategory;
+  neighborhood: string;
+  monthlyRent: number;
+  depositMonths: number;
+  beds: number;
+  baths: number;
+  sqft: number;
+  availability: 'Available Now' | 'Available Dec 15' | 'Pre-Leasing Jan';
+  leaseTerms: ('6 Months' | '12 Months' | '24 Months')[];
+  furnished: boolean;
+  petFriendly: boolean;
+  parkingSpaces: number;
   image: string;
   summary: string;
-  architecturalBrief: string;
-  materialsUsed: string[];
+  highlights: string[];
+  amenities: string[];
 }
 
-export interface ClientTestimonial {
-  id: string;
-  clientName: string;
-  role: string;
-  location: string;
-  projectTitle: string;
+export interface ResidentReview {
   quote: string;
+  author: string;
+  role: string;
+  residence: string;
   outcome: string;
 }
 
-export const HERO_IMAGE = '/src/assets/images/hero_coastal_villa_1795508752590.jpg';
+export const HERO_RESIDENCE_IMAGE = '/src/assets/images/hero_coastal_villa_1795512014672.jpg';
 
-export const STUDIO_METRICS: StudioMetric[] = [
+export const RENTAL_METRICS: RentalMetric[] = [
   {
-    value: '14 yrs',
-    label: 'Architectural Practice',
-    context: 'Established 2012 across coastal and urban commissions',
+    value: '36',
+    label: 'Verified Residences',
+    context: 'Architect-designed villas, penthouses & private pavilions',
   },
   {
-    value: '68',
-    label: 'Residences Completed',
-    context: 'Turnkey private homes, penthouses, and retreats',
+    value: '48 hrs',
+    label: 'Lease Approval',
+    context: 'Streamlined digital screening & transparent terms',
   },
   {
-    value: '420k',
-    label: 'Sq. Ft. Curated',
-    context: 'Custom stone, millwork, and lighting architecture',
+    value: '6–24 mo',
+    label: 'Flexible Lease Windows',
+    context: 'Seasonal coastal stays & multi-year corporate leases',
   },
   {
-    value: '12',
-    label: 'Design Honors',
-    context: 'International interior architecture citations',
+    value: '24/7',
+    label: 'Resident Concierge',
+    context: 'Dedicated engineering, fiber & move-in orchestration',
   },
 ];
 
-export const DESIGN_PROCESS: ProcessPhase[] = [
+export const LEASING_PROCESS: LeasingStep[] = [
   {
     step: '01',
-    title: 'Spatial Discovery & Site Study',
-    duration: 'Weeks 1–3',
-    summary:
-      'We analyze natural solar trajectory, sightlines, acoustic behavior, and structural envelope before drawing a single interior partition.',
-    deliverables: [
-      'Laser-measured architectural survey & daylight study',
-      'Circulation zoning & furniture proportion masterplan',
-      'Preliminary project schedule & transparent budget framework',
-    ],
-    leadDiscipline: 'Principal Interior Architect',
+    title: 'Curated Residence Match',
+    timing: 'Day 1',
+    description:
+      'Filter verified waterfront villas, loft penthouses, and courtyard pavilions by lease length, sunlight orientation, and furnishing.',
+    deliverable: 'Shortlisted floor plans & neighborhood dossier',
   },
   {
     step: '02',
-    title: 'Material, Stone & Light Concept',
-    duration: 'Weeks 4–8',
-    summary:
-      'Physical material boards combine quarried stone slabs, timber veneers, textiles, and warm 2700K architectural lighting simulations.',
-    deliverables: [
-      'Physical sample box shipped for tactile review',
-      'Photorealistic daylight & twilight lighting renders',
-      'Refined room-by-room elevation drawings',
-    ],
-    leadDiscipline: 'Material & Lighting Director',
+    title: 'Private or Live Video Tour',
+    timing: 'Days 2–3',
+    description:
+      'Walk each space in person at golden hour or join a high-definition architectural walkthrough with our leasing advisor.',
+    deliverable: 'Interactive viewing notes & acoustic test',
   },
   {
     step: '03',
-    title: 'Bespoke Millwork & Global Procurement',
-    duration: 'Weeks 9–20',
-    summary:
-      'Our atelier drafts millwork shop drawings and coordinates directly with European stone quarries, joinery workshops, and artisans.',
-    deliverables: [
-      'CNC-verified custom joinery & stone fabrication packets',
-      'Direct quarry slab selection & factory quality audits',
-      'Consolidated climate-controlled logistics & warehousing',
-    ],
-    leadDiscipline: 'Technical Millwork & Procurement Lead',
+    title: 'Instant Digital Application',
+    timing: '48 Hours',
+    description:
+      'Submit encrypted income verification and sign clear, plain-language lease agreements with zero hidden brokerage add-ons.',
+    deliverable: 'Countersigned digital lease & deposit receipt',
   },
   {
     step: '04',
-    title: 'White-Glove Installation & Styling',
-    duration: 'Weeks 21–24',
-    summary:
-      'Every fixture is calibrated on site, lighting scenes are programmed to circadian rhythms, and art and textiles are layered for immediate living.',
-    deliverables: [
-      'On-site contractor coordination & punch-list sign-off',
-      'Dusk lighting scene programming & acoustic tuning',
-      'Complete care dossier for natural stone and timber finishes',
-    ],
-    leadDiscipline: 'Turnkey Commissioning Team',
+    title: 'Keyless Move-In & Concierge',
+    timing: 'Move-In Day',
+    description:
+      'Arrive to pre-activated gigabit fiber, calibrated 2700K smart lighting scenes, climate presets, and optional bespoke furnishing.',
+    deliverable: 'Biometric access & dedicated resident portal',
   },
 ];
 
-export const SERVICES: ServiceOffering[] = [
+export const RENTAL_SERVICES: RentalService[] = [
   {
-    index: '01',
-    title: 'Full-Home Architectural Interiors',
-    scope: 'Ground-Up & Gut Renovations',
-    featured: true,
-    description:
-      'Comprehensive interior architecture from structural space planning and ceiling cove geometry to bespoke stone bathrooms, kitchens, and private suites.',
-    outcomes: [
-      'Cohesive flow between indoor living volumes and coastal terraces',
-      'Integrated concealed HVAC, motorized shading, and acoustic damping',
-      'Single studio point of contact from concept through move-in day',
+    code: '01',
+    title: 'Private & Live Virtual Showings',
+    span: 'wide',
+    summary:
+      'Schedule discreet in-person walkthroughs or real-time twilight video tours tailored to relocation executives and international tenants.',
+    highlights: [
+      'Same-week private access across all active coastal listings',
+      'Live room-by-room daylight & noise measurements on video',
+      'Direct Q&A with dedicated property specialists',
     ],
+    tooltip: 'Zero group open houses—every viewing is private by appointment.',
   },
   {
-    index: '02',
-    title: 'Custom Millwork & Stonework',
-    scope: 'Bespoke Joinery & Monoliths',
-    description:
-      'Fluted walnut cabinetry, monolithic carved stone islands, concealed bar libraries, and architectural wall paneling engineered to millimeter tolerances.',
-    outcomes: [
-      'Custom hardware machined in unlacquered brass and bronze',
-      'Book-matched marble and quartzite slab fabrication',
+    code: '02',
+    title: 'Turnkey Lease & Screening',
+    span: 'standard',
+    summary:
+      'Transparent digital leases with clear deposit protections, rapid 48-hour underwriting, and flexible corporate billing.',
+    highlights: [
+      'Direct bank & corporate guarantor verification',
+      'Standardized move-in inspection photo archive',
     ],
+    tooltip: 'Security deposits are held in audited escrow with itemized checklists.',
   },
   {
-    index: '03',
-    title: 'Turnkey Coastal Styling & Art',
-    scope: 'Furniture, Textiles & Curation',
-    description:
-      'Sourcing heirloom furniture, hand-knotted wool carpets, Belgian linen drapery, and site-specific contemporary artworks tailored to marine climates.',
-    outcomes: [
-      'Salt-air resilient upholstery and marine-grade terrace textiles',
-      'Commissioned sculptural lighting and ceramic vessels',
+    code: '03',
+    title: 'White-Glove Move-In Concierge',
+    span: 'standard',
+    summary:
+      'Utilities, symmetrical fiber internet, smart home automation, and bi-weekly stone & timber care activated before arrival.',
+    highlights: [
+      'Zero utility setup friction on arrival day',
+      'Optional curated Belgian bouclé & oak furniture packages',
     ],
+    tooltip: 'Furnished packages can be added or removed per lease term.',
   },
   {
-    index: '04',
-    title: 'Architectural Lighting & Acoustics',
-    scope: 'Atmospheric Engineering',
-    description:
-      'Layered indirect cove illumination, zero-glare recessed apertures, and subtle limewash/timber acoustic absorption for serene evening living.',
-    outcomes: [
-      'Scene-based Lutron & DALI lighting choreography',
-      'Warm 2400K–2700K evening transitions without ceiling clutter',
+    code: '04',
+    title: 'Owner Asset & Tenant Advisory',
+    span: 'wide',
+    summary:
+      'For architectural property owners: full-cycle resident vetting, preventative glass and travertine maintenance, and occupancy optimization.',
+    highlights: [
+      '98.4% annual on-time rent collection across managed estates',
+      'Quarterly preventative engineering & smart glazing inspections',
+      'Monthly owner statements with zero surprise maintenance markups',
     ],
+    tooltip: 'We protect architectural finishes with vetted artisan maintenance crews.',
   },
 ];
 
-export const MATERIAL_SWATCHES: MaterialSwatch[] = [
+export const RENTAL_STANDARDS: RentalStandard[] = [
   {
-    id: 'travertine',
-    name: 'Roman Honed Travertine',
-    origin: 'Tivoli, Italy',
-    finish: 'Unfilled Open-Pore Matte',
-    patinaNote: 'Softens subtly around edges over decades without glossy reflection.',
-    idealPairing: 'Fireplace monoliths, terrace thresholds, spa basins',
-    swatchStyle: 'linear-gradient(135deg, #c9bca7 0%, #a99b84 48%, #8f806a 100%)',
+    term: 'Transparent Pricing',
+    definition:
+      'Every monthly rate displays base rent, refundable deposit terms, and included architectural maintenance upfront with zero surprise admin fees.',
   },
   {
-    id: 'smoked-oak',
-    name: 'Smoked European Oak',
-    origin: 'Bavaria, Germany',
-    finish: 'Wire-Brushed Natural Oil',
-    patinaNote: 'Deepens in warmth under coastal daylight while masking fine wear.',
-    idealPairing: 'Full-height wall paneling, fluted cabinetry, dining tables',
-    swatchStyle: 'linear-gradient(135deg, #4b392c 0%, #34261c 52%, #221811 100%)',
+    term: 'Flexible Lease Windows',
+    definition:
+      'Choose 6-month seasonal stays, standard 12-month residencies, or discounted 24-month commitments with priority renewal rights.',
   },
   {
-    id: 'aged-brass',
-    name: 'Unlacquered Aged Brass',
-    origin: 'Antwerp, Belgium',
-    finish: 'Hand-Burnished Satin',
-    patinaNote: 'Develops an organic, living bronze tone at touchpoints.',
-    idealPairing: 'Sculptural pendants, cabinet pulls, faucet trims',
-    swatchStyle: 'linear-gradient(135deg, #c8a97e 0%, #9b7d53 55%, #6d5534 100%)',
+    term: 'Architectural Stewardship',
+    definition:
+      'All smoked-glass partitions, honed travertine slabs, and indirect cove systems undergo certified quarterly upkeep included in tenancy.',
   },
   {
-    id: 'belgian-linen',
-    name: 'Belgian Raw Bouclé & Linen',
-    origin: 'Kortrijk, Belgium',
-    finish: 'Heavyweight Unbleached Weave',
-    patinaNote: 'Drapes fluidly and softens acoustic reverberation in glass volumes.',
-    idealPairing: 'Deep modular sofas, sheer floor-to-ceiling drapery',
-    swatchStyle: 'linear-gradient(135deg, #ded8cc 0%, #c6beb0 50%, #aea596 100%)',
+    term: 'Turnkey Connectivity',
+    definition:
+      'Dual-WAN symmetrical fiber internet, Lutron twilight dimming scenes, and keyless mobile access arrive active from hour one.',
+  },
+  {
+    term: 'Escrow Protection',
+    definition:
+      'Security deposits sit in segregated resident escrow accounts with timestamped high-resolution move-in documentation.',
   },
 ];
 
-export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
+export const RENTAL_LISTINGS: RentalListing[] = [
   {
-    id: 'big-sur-headland',
-    title: 'Headland Cliff Residence',
-    category: 'Coastal Villas',
-    location: 'Big Sur, California',
-    areaSqFt: '6,400 sq ft',
-    year: '2025',
-    duration: '11 months',
-    image: '/src/assets/images/hero_coastal_villa_1795508752590.jpg',
+    id: 'big-sur-headland-villa',
+    title: 'Big Sur Headland Glass Villa',
+    category: 'Waterfront Villas',
+    neighborhood: 'Big Sur Coast, CA',
+    monthlyRent: 14500,
+    depositMonths: 1.5,
+    beds: 4,
+    baths: 4.5,
+    sqft: 4400,
+    availability: 'Available Now',
+    leaseTerms: ['6 Months', '12 Months', '24 Months'],
+    furnished: true,
+    petFriendly: true,
+    parkingSpaces: 3,
+    image: '/src/assets/images/hero_coastal_villa_1795512014672.jpg',
     summary:
-      'Cantilevered oceanfront pavilion anchored by dry-stacked travertine piers and warm smoked oak ceilings.',
-    architecturalBrief:
-      'Opened the main living volume toward the Pacific horizon with minimal-profile glazing while grounding the interior against coastal fog using recessed perimeter cove lighting and natural stone mass.',
-    materialsUsed: ['Roman Honed Travertine', 'Smoked European Oak', 'Belgian Linen'],
+      'Oceanfront modernist residence featuring monolithic dark travertine walls, acoustic fluted smoked-glass dividers, and heated coastal plunge terrace.',
+    highlights: ['Direct Pacific horizon glazing', '2700K cove dimming', 'Private EV garage'],
+    amenities: ['Infinity Pool', '2 Gbps Fiber', 'Radiant Stone Floors', 'Wine Vault'],
   },
   {
-    id: 'southbank-penthouse',
-    title: 'Thames Horizon Penthouse',
-    category: 'Urban Penthouses',
-    location: 'London, United Kingdom',
-    areaSqFt: '4,150 sq ft',
-    year: '2025',
-    duration: '8 months',
-    image: '/src/assets/images/portfolio_penthouse_living_1795508753035.jpg',
+    id: 'harbor-skyline-penthouse',
+    title: 'Harbor Skyline Smoked-Glass Loft',
+    category: 'Penthouse Lofts',
+    neighborhood: 'Marina District, SF',
+    monthlyRent: 11200,
+    depositMonths: 1,
+    beds: 3,
+    baths: 3,
+    sqft: 3150,
+    availability: 'Available Now',
+    leaseTerms: ['12 Months', '24 Months'],
+    furnished: true,
+    petFriendly: false,
+    parkingSpaces: 2,
+    image: '/src/assets/images/rental_penthouse_loft_1795512311466.jpg',
     summary:
-      'Evening-oriented sky salon featuring split-face limestone hearth, smoked oak paneling, and bespoke brass pendant.',
-    architecturalBrief:
-      'Designed around twilight entertaining above the skyline. Dark oiled timber absorbs urban glare from the floor-to-ceiling curtain wall while a monolithic stone hearth forms an intimate focal anchor.',
-    materialsUsed: ['Charred Smoked Oak', 'Carved Limestone', 'Unlacquered Brass'],
+      'Corner penthouse with floor-to-ceiling blackened steel mullions, sweeping marina twilight views, travertine center island, and private elevator foyer.',
+    highlights: ['270° Harbor panorama', 'Direct elevator entry', 'Acoustic triple glazing'],
+    amenities: ['Concierge Desk', 'Private Terrace', 'EV Chargers', 'Chef Kitchen'],
   },
   {
-    id: 'malibu-cove-kitchen',
-    title: 'Point Dume Culinary House',
-    category: 'Coastal Villas',
-    location: 'Malibu, California',
-    areaSqFt: '5,200 sq ft',
-    year: '2024',
-    duration: '9 months',
-    image: '/src/assets/images/portfolio_coastal_kitchen_1795508753540.jpg',
+    id: 'horizon-terrace-estate',
+    title: 'Cliffside Retractable Glass Residence',
+    category: 'Waterfront Villas',
+    neighborhood: 'Laguna Headlands, CA',
+    monthlyRent: 16800,
+    depositMonths: 2,
+    beds: 4,
+    baths: 5,
+    sqft: 4950,
+    availability: 'Available Dec 15',
+    leaseTerms: ['6 Months', '12 Months', '24 Months'],
+    furnished: true,
+    petFriendly: true,
+    parkingSpaces: 3,
+    image: '/src/assets/images/rental_waterfront_terrace_1795512313190.jpg',
     summary:
-      'Monolithic Taj Mahal quartzite island paired with vertical fluted walnut millwork and sheer coastal drapery.',
-    architecturalBrief:
-      'Concealed commercial-grade culinary appliances behind continuous fluted walnut cabinetry so the kitchen transitions effortlessly into the ocean-view dining gallery.',
-    materialsUsed: ['Taj Mahal Quartzite', 'Fluted American Walnut', 'Brushed Bronze'],
+      'Seamless indoor-outdoor cliffside pavilion where 16-foot retractable smoked-glass walls open onto a saltwater infinity pool overlooking open water.',
+    highlights: ['Motorized glass walls', 'Timber soffit terrace', 'Outdoor travertine bar'],
+    amenities: ['Saltwater Infinity Pool', 'Guest Casita', 'Smart Climate', 'Solar + Battery'],
   },
   {
-    id: 'cascais-sanctuary',
-    title: 'Cascais Primary Sanctuary',
-    category: 'Coastal Villas',
-    location: 'Cascais, Portugal',
-    areaSqFt: '3,800 sq ft',
-    year: '2024',
-    duration: '7 months',
-    image: '/src/assets/images/portfolio_suite_sanctuary_1795508754044.jpg',
+    id: 'obsidian-courtyard-pavilion',
+    title: 'Obsidian Moss Courtyard Pavilion',
+    category: 'Modern Pavilions',
+    neighborhood: 'Carmel Highlands, CA',
+    monthlyRent: 9600,
+    depositMonths: 1,
+    beds: 3,
+    baths: 2.5,
+    sqft: 2850,
+    availability: 'Available Now',
+    leaseTerms: ['6 Months', '12 Months', '24 Months'],
+    furnished: false,
+    petFriendly: true,
+    parkingSpaces: 2,
+    image: '/src/assets/images/portfolio_obsidian_pavilion_1795512014529.jpg',
     summary:
-      'Hand-troweled charcoal limewash bedroom suite with low platform oak joinery and solid travertine plinths.',
-    architecturalBrief:
-      'Created a restorative acoustic retreat using mineral limewash walls, slatted oak wardrobe doors for passive airflow, and unbleached woven textiles.',
-    materialsUsed: ['Mineral Charcoal Limewash', 'European White Oak', 'Tivoli Travertine'],
+      'Single-level serene pavilion lined in fumed European oak millwork, translucent fluted glass screens, and private Japanese maple courtyard.',
+    highlights: ['Zero-step floor plan', 'Japanese moss atrium', 'Acoustic oak ceiling'],
+    amenities: ['Private Garden', 'Heated Basalt Tile', '2-Car Garage', 'Studio Office'],
   },
   {
-    id: 'comporta-pavilion',
-    title: 'Atlantic Courtyard Retreat',
-    category: 'Hospitality',
-    location: 'Comporta, Portugal',
-    areaSqFt: '8,900 sq ft',
-    year: '2025',
-    duration: '14 months',
-    image: '/src/assets/images/portfolio_pavilion_lounge_1795508756822.jpg',
+    id: 'travertine-garden-residence',
+    title: 'Silver Travertine Atrium House',
+    category: 'Modern Pavilions',
+    neighborhood: 'Montecito, CA',
+    monthlyRent: 12400,
+    depositMonths: 1.5,
+    beds: 3,
+    baths: 3.5,
+    sqft: 3600,
+    availability: 'Pre-Leasing Jan',
+    leaseTerms: ['12 Months', '24 Months'],
+    furnished: false,
+    petFriendly: true,
+    parkingSpaces: 2,
+    image: '/src/assets/images/portfolio_travertine_courtyard_1795512014819.jpg',
     summary:
-      'Private boutique estate pavilion uniting indoor hearth lounge and still reflecting pool beneath cedar eaves.',
-    architecturalBrief:
-      'Blended sheltered limestone hospitality suites with open-air coastal terraces, allowing pocket glass walls to disappear completely during summer evenings.',
-    materialsUsed: ['Chiseled Limestone', 'Western Red Cedar', 'Marine Bouclé'],
+      'Sunlit culinary atrium anchored by a 14-foot vein-cut silver travertine island, blackened bronze vitrine cabinetry, and olive tree courtyard.',
+    highlights: ['Skylit conservatory', 'Patinated bronze millwork', 'Olive courtyard'],
+    amenities: ['Sub-Zero Culinary Suite', 'EV Ready', 'Gated Entry', 'Garden Upkeep'],
+  },
+  {
+    id: 'la-jolla-gallery-loft',
+    title: 'Sunken Basalt Gallery Residence',
+    category: 'Penthouse Lofts',
+    neighborhood: 'La Jolla Cove, CA',
+    monthlyRent: 10800,
+    depositMonths: 1,
+    beds: 2,
+    baths: 2.5,
+    sqft: 3050,
+    availability: 'Available Now',
+    leaseTerms: ['6 Months', '12 Months'],
+    furnished: true,
+    petFriendly: false,
+    parkingSpaces: 2,
+    image: '/src/assets/images/portfolio_gallery_atrium_1795512015466.jpg',
+    summary:
+      'Double-height architectural residence with floating limestone treads, smoked tempered glass balustrades, and museum-grade UV-filtered lighting.',
+    highlights: ['22-ft gallery atrium', 'Museum lighting track', 'Basalt stone treads'],
+    amenities: ['UV Daylight Glazing', 'Private Vault Storage', 'Concierge', 'Fiber Dual-WAN'],
   },
 ];
 
-export const TESTIMONIALS: ClientTestimonial[] = [
+export const RESIDENT_REVIEWS: ResidentReview[] = [
   {
-    id: 'vance',
-    clientName: 'Henrik & Claire Lindqvist',
-    role: 'Homeowners, Headland Cliff Residence',
-    location: 'Big Sur, California',
-    projectTitle: '6,400 sq ft New-Build Coastal Villa',
     quote:
-      'Before Coastal Interio joined, our architectural shell felt cavernous and cold against the ocean fog. Their material palette of honed travertine, smoked oak, and hidden cove lighting turned every room into an effortless sanctuary.',
-    outcome: 'Delivered 2 weeks ahead of schedule with 100% custom millwork fitment on site.',
+      'Moving from Zurich, we toured the Big Sur Glass Villa live via video and walked into a fully lit, fiber-connected home 72 hours later with zero utility headaches.',
+    author: 'Elena & Marcus Lindqvist',
+    role: '12-Month Corporate Residents',
+    residence: 'Big Sur Headland Glass Villa',
+    outcome: 'Renewed for 24-month residency',
   },
   {
-    id: 'ashford',
-    clientName: 'Julian Ashford',
-    role: 'Managing Partner, Thames Horizon Penthouse',
-    location: 'London, United Kingdom',
-    projectTitle: '4,150 sq ft Full Penthouse Conversion',
     quote:
-      'Glare from three walls of glass used to make the apartment unusable after dusk. Coastal Interio re-engineered the lighting, paneled the salon in dark oak, and sculpted the limestone fireplace—now the room feels grounded day and night.',
-    outcome: 'Cut interior acoustic reverberation by half and unified four fragmented rooms.',
+      'Every lease line item—deposit escrow, stone maintenance, EV bay—was crystal clear before signing. Easily the smoothest architectural lease I have experienced.',
+    author: 'Henrik Solberg',
+    role: 'Managing Partner',
+    residence: 'Harbor Skyline Smoked-Glass Loft',
+    outcome: 'Approved in 36 hours',
   },
   {
-    id: 'monteiro',
-    clientName: 'Beatriz Monteiro',
-    role: 'Founder, Atlantic Courtyard Retreat',
-    location: 'Comporta, Portugal',
-    projectTitle: '8,900 sq ft Private Hospitality Estate',
     quote:
-      'Their team handled stone quarry selection, European joinery logistics, and final placement down to the last ceramic vessel. Guests consistently remark on the calm materiality before anything else.',
-    outcome: 'Full 6-suite property commissioned turnkey with zero post-handover defects.',
+      'As an owner of a travertine courtyard house, their vetted tenant matching and quarterly glazing inspections keep my property pristine and 100% leased.',
+    author: 'Claire Sato',
+    role: 'Estate Owner & Architect',
+    residence: 'Silver Travertine Atrium House',
+    outcome: 'Zero vacancy across 3 consecutive leases',
   },
 ];

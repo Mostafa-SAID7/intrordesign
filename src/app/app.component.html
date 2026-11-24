@@ -1,811 +1,941 @@
-<div class="min-h-screen bg-[#050505] text-[#E5E2DC] selection:bg-[#C8A97E] selection:text-[#050505]">
-  <!-- Top Navigation (Strict 3-Zone Contract) -->
-  <header
-    class="fixed top-0 inset-x-0 z-40 bg-[#050505]/85 backdrop-blur-md border-b border-white/10"
-  >
-    <div class="max-w-7xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between gap-8">
-      <!-- Zone 1: Single text element wordmark -->
-      <a
-        href="#"
-        class="font-serif text-xl md:text-2xl font-medium tracking-tight text-white hover:text-[#C8A97E] transition-colors whitespace-nowrap shrink-0"
-      >
-        Coastal Interio
-      </a>
+<app-intro-loader />
 
-      <!-- Zone 2: 4 clean single-line text links -->
-      <nav aria-label="Primary navigation" class="hidden md:flex items-center gap-8 text-sm">
-        @for (link of navLinks; track link.id) {
-          <a
-            [href]="'#' + link.id"
-            class="relative py-1 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
-            [ngClass]="activeSection() === link.id ? 'text-white' : 'text-neutral-400 hover:text-white'"
-          >
-            {{ link.label }}
-            <span
-              class="absolute inset-x-0 -bottom-0.5 h-px bg-[#C8A97E] transition-transform duration-200 origin-left"
-              [style.transform]="activeSection() === link.id ? 'scaleX(1)' : 'scaleX(0)'"
-              aria-hidden="true"
-            ></span>
-          </a>
-        }
-      </nav>
+<app-studio-header
+  [navItems]="navLinks"
+  [savedCount]="savedIds().length"
+  (bookClick)="scrollToSection('consultation')"
+  (savedClick)="savedDrawerOpen.set(true)"
+/>
 
-      <!-- Zone 3: 1 primary action + mobile menu button -->
-      <div class="flex items-center gap-3 shrink-0">
-        <div class="hidden md:block" appMotionMagnetic [magneticStrength]="4">
-          <app-ui-button variant="primary" size="sm" href="#contact">
-            Book Consultation
-          </app-ui-button>
-        </div>
+<main class="relative bg-[#050507]">
+  <!-- Hero Split + Quick Search + Interactive Smoked-Glass Facets + Metrics Strip -->
+  <app-glass-hero
+    [heroImage]="heroImage"
+    [metrics]="metrics"
+    (bookClick)="scrollToSection('consultation')"
+    (searchSubmit)="onHeroSearch($event)"
+  />
 
-        <button
-          type="button"
-          (click)="toggleMobileMenu()"
-          [attr.aria-expanded]="mobileMenuOpen()"
-          aria-label="Toggle navigation menu"
-          class="md:hidden h-10 w-10 inline-flex items-center justify-center border border-white/15 rounded-lg text-neutral-200 hover:border-[#C8A97E]/60 transition-colors cursor-pointer"
-        >
-          <span class="text-sm leading-none" aria-hidden="true">
-            {{ mobileMenuOpen() ? '✕' : '☰' }}
-          </span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Subtle Hairline Scroll Progress Bar (Compositor scaleX only) -->
-    <div class="h-[2px] w-full bg-white/5 overflow-hidden" aria-hidden="true">
-      <div
-        #scrollProgressBar
-        class="h-full w-full bg-[#C8A97E] origin-left scale-x-0"
-      ></div>
-    </div>
-
-    <!-- Mobile Navigation Drawer -->
-    @if (mobileMenuOpen()) {
-      <div class="md:hidden bg-[#0A0A0A] border-t border-white/10 px-6 py-5 space-y-3">
-        @for (link of navLinks; track link.id) {
-          <a
-            [href]="'#' + link.id"
-            (click)="closeMobileMenu()"
-            class="block py-2 text-sm text-neutral-300 hover:text-white transition-colors"
-          >
-            {{ link.label }}
-          </a>
-        }
-        <div class="pt-2 border-t border-white/10">
-          <app-ui-button
-            variant="primary"
-            size="md"
-            href="#contact"
-            [fullWidth]="true"
-            (clicked)="closeMobileMenu()"
-          >
-            Book Consultation
-          </app-ui-button>
-        </div>
-      </div>
-    }
-  </header>
-
-  <main>
-    <!-- Hero Section (Zero-latency first-screen choreography + Motion scroll parallax) -->
-    <section class="relative min-h-[88vh] flex items-end pt-28 pb-16 md:pb-24 overflow-hidden">
-      <div class="absolute inset-0 z-0 bg-[#0A0A0A] overflow-hidden">
-        @if (!heroImageFailed()) {
-          <div appMotionParallax [parallaxDistance]="48" class="w-full h-full">
-            <img
-              #heroBackdropImg
-              [src]="heroImage"
-              alt="Oceanfront architectural living pavilion designed by Coastal Interio"
-              referrerPolicy="no-referrer"
-              fetchpriority="high"
-              decoding="async"
-              (error)="heroImageFailed.set(true)"
-              class="w-full h-full object-cover opacity-55"
-            />
-          </div>
-        }
-        <div
-          class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/65 to-[#050505]/40"
-        ></div>
-      </div>
-
-      <div class="relative z-10 max-w-7xl mx-auto px-6 w-full">
-        <div class="max-w-3xl">
-          <p
-            appMotionReveal
-            [motionImmediate]="true"
-            [motionDelay]="0"
-            [motionY]="8"
-            [motionDuration]="0.42"
-            class="text-xs md:text-sm text-[#C8A97E] tracking-wide mb-4"
-          >
-            Architectural Interior Studio · Malibu · London · Lisbon
+  <!-- Available Residences Catalog & Multi-Filter Engine -->
+  <section id="listings" class="lazy-section border-t border-white/[0.08] py-16 sm:py-22">
+    <div class="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-10">
+      <div appReveal class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+        <div>
+          <p class="text-xs font-medium uppercase tracking-[0.18em] text-white/45">
+            Available Portfolio
           </p>
-
-          <h1
-            appMotionReveal
-            [motionImmediate]="true"
-            [motionDelay]="0.06"
-            [motionY]="10"
-            [motionDuration]="0.52"
-            class="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium tracking-tight text-white leading-[1.06] [text-wrap:balance]"
+          <h2
+            class="font-display mt-3 text-3xl font-medium tracking-tight text-white sm:text-5xl text-balance"
           >
-            Quiet architectural spaces shaped by
-            <em class="italic font-normal text-[#E2Cda6]">stone, timber, and coastal light.</em>
-          </h1>
+            Curated architectural residences for lease.
+          </h2>
+        </div>
+        <p class="font-mono-tabular text-xs text-white/55">
+          Showing {{ filteredListings().length }} of {{ listings.length }} verified residences
+        </p>
+      </div>
 
-          <p
-            appMotionReveal
-            [motionImmediate]="true"
-            [motionDelay]="0.12"
-            [motionY]="10"
-            [motionDuration]="0.52"
-            class="mt-6 text-base md:text-lg text-neutral-300 max-w-2xl leading-relaxed"
-          >
-            We design and deliver turnkey residential interiors—uniting spatial architecture, bespoke
-            European millwork, and curated materiality for enduring private living.
-          </p>
-
+      <!-- Filter & Sort Bar -->
+      <div class="smoked-slab mt-8 rounded-2xl p-4 sm:p-5">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <!-- Typology Tabs -->
           <div
-            appMotionReveal
-            [motionImmediate]="true"
-            [motionDelay]="0.18"
-            [motionY]="10"
-            [motionDuration]="0.52"
-            class="mt-8 flex flex-wrap items-center gap-4"
+            class="inline-flex flex-wrap items-center gap-1 rounded-xl border border-white/10 bg-[#111115] p-1"
+            role="tablist"
+            aria-label="Filter residences by category"
           >
-            <div appMotionMagnetic [magneticStrength]="5">
-              <app-ui-button variant="primary" size="lg" href="#contact">
-                Schedule Private Consultation
-              </app-ui-button>
+            @for (cat of categoryTabs; track cat) {
+              <button
+                type="button"
+                role="tab"
+                [attr.aria-selected]="activeCategory() === cat"
+                (click)="activeCategory.set(cat)"
+                class="shrink-0 whitespace-nowrap rounded-lg px-3.5 py-2 text-xs font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b9abff]"
+                [ngClass]="
+                  activeCategory() === cat
+                    ? 'bg-[#ececf0] text-[#09090d]'
+                    : 'text-white/65 hover:text-white'
+                "
+              >
+                {{ cat }}
+              </button>
+            }
+          </div>
+
+          <!-- Search, Bedrooms, Sort & Quick Toggles -->
+          <div class="grid gap-3 sm:grid-cols-2 lg:flex lg:items-center">
+            <div class="w-full lg:w-52">
+              <label for="catalog-search" class="sr-only">Filter residences</label>
+              <input
+                id="catalog-search"
+                type="text"
+                [ngModel]="searchQuery()"
+                (ngModelChange)="searchQuery.set($event)"
+                placeholder="Neighborhood or amenity..."
+                class="h-10 w-full rounded-xl border border-white/12 bg-[#121217] px-3.5 text-sm text-white placeholder:text-white/35 focus:border-[#b9abff]/60 focus:outline-none"
+              />
             </div>
-            <app-ui-button variant="secondary" size="lg" href="#portfolio">
-              Explore Selected Works
-            </app-ui-button>
+
+            <div class="w-full lg:w-44">
+              <app-glass-dropdown
+                [ngModel]="minBeds()"
+                (ngModelChange)="minBeds.set($event)"
+                [options]="bedroomOptions"
+                placeholder="Bedrooms"
+              />
+            </div>
+
+            <div class="w-full lg:w-48">
+              <app-glass-dropdown
+                [ngModel]="sortBy()"
+                (ngModelChange)="sortBy.set($event)"
+                [options]="sortOptions"
+                placeholder="Sort By"
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- Studio Quantitative Proof Strip -->
-    <section aria-label="Studio credentials" class="border-y border-white/10 bg-[#0A0A0A]">
-      <div class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-2 lg:grid-cols-4 gap-8">
-        @for (metric of metrics; track metric.label; let idx = $index) {
-          <div
-            appMotionReveal
-            [motionDelay]="idx * 0.06"
-            [motionY]="14"
-            class="space-y-1.5"
-          >
-            <p
-              [appMotionCounter]="metric.value"
-              class="font-serif text-3xl md:text-4xl text-white font-medium tabular-nums"
-            >
-              {{ metric.value }}
-            </p>
-            <p class="text-sm font-medium text-[#C8A97E]">{{ metric.label }}</p>
-            <p class="text-xs text-neutral-400 leading-relaxed">{{ metric.context }}</p>
-          </div>
-        }
-      </div>
-    </section>
-
-    <!-- Section 1: Process (Interactive 4-Phase Methodology) -->
-    <section id="process" class="py-20 md:py-28 max-w-7xl mx-auto px-6">
-      <div appMotionReveal class="mb-12">
-        <app-ui-section-header
-          kicker="Design Methodology"
-          title="From architectural survey to twilight commissioning"
-          description="Every commission follows a transparent 24-week architectural cadence with physical sample reviews and single-studio accountability."
-        ></app-ui-section-header>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-        <!-- Left: Interactive Phase Selector -->
-        <div class="lg:col-span-5 flex flex-col gap-3">
-          @for (phase of processPhases; track phase.step; let idx = $index) {
+        <div
+          class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.08] pt-3.5"
+        >
+          <div class="flex flex-wrap items-center gap-2">
             <button
               type="button"
-              appMotionReveal
-              [motionDelay]="idx * 0.05"
-              [motionY]="12"
-              (click)="selectPhase(idx)"
-              class="text-left p-5 rounded-xl border transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
+              (click)="furnishedOnly.set(!furnishedOnly())"
+              class="shrink-0 whitespace-nowrap rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors duration-150"
               [ngClass]="
-                activePhaseIndex() === idx
-                  ? 'bg-[#121110] border-[#C8A97E]/60'
-                  : 'bg-[#0A0A0A] border-white/10 hover:border-white/25'
+                furnishedOnly()
+                  ? 'border-[#b9abff]/60 bg-[#b9abff]/15 text-[#b9abff]'
+                  : 'border-white/12 bg-white/[0.03] text-white/65 hover:text-white'
               "
             >
-              <div class="flex items-center justify-between gap-4">
-                <span class="font-mono text-xs text-[#C8A97E] tabular-nums">
-                  {{ phase.step }}.
-                </span>
-                <span class="font-mono text-xs text-neutral-400 tabular-nums">
-                  {{ phase.duration }}
-                </span>
-              </div>
-              <h3 class="mt-2 text-base md:text-lg font-medium text-white">
-                {{ phase.title }}
-              </h3>
+              Furnished Only
+            </button>
+
+            <button
+              type="button"
+              (click)="petFriendlyOnly.set(!petFriendlyOnly())"
+              class="shrink-0 whitespace-nowrap rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors duration-150"
+              [ngClass]="
+                petFriendlyOnly()
+                  ? 'border-[#36d67e]/60 bg-[#36d67e]/15 text-[#36d67e]'
+                  : 'border-white/12 bg-white/[0.03] text-white/65 hover:text-white'
+              "
+            >
+              Pet Friendly
+            </button>
+
+            @if (leaseTermFilter() !== 'all') {
+              <button
+                type="button"
+                (click)="leaseTermFilter.set('all')"
+                class="shrink-0 whitespace-nowrap rounded-lg border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs text-white/80 hover:text-white"
+              >
+                Term: {{ leaseTermFilter() }} ✕
+              </button>
+            }
+          </div>
+
+          @if (hasActiveFilters()) {
+            <button
+              type="button"
+              (click)="resetFilters()"
+              class="text-xs font-medium text-[#b9abff] hover:underline"
+            >
+              Reset all filters
             </button>
           }
         </div>
-
-        <!-- Right: Active Phase Detail Card -->
-        <div
-          #phaseDetailCard
-          appMotionReveal
-          appMotionSpotlight
-          [motionDelay]="0.12"
-          class="lg:col-span-7 bg-[#0A0A0A] border border-white/10 rounded-xl p-8 md:p-10 flex flex-col justify-between gap-8"
-        >
-          <div class="space-y-6">
-            <div class="flex flex-wrap items-center gap-3 text-xs text-neutral-400">
-              <span class="text-[#C8A97E] font-mono tabular-nums">
-                Phase {{ activePhase().step }}
-              </span>
-              <span aria-hidden="true">·</span>
-              <span class="font-mono tabular-nums">{{ activePhase().duration }}</span>
-              <span aria-hidden="true">·</span>
-              <span>Lead: {{ activePhase().leadDiscipline }}</span>
-            </div>
-
-            <h3 class="font-serif text-3xl md:text-4xl text-white tracking-tight">
-              {{ activePhase().title }}
-            </h3>
-
-            <p class="text-base text-neutral-300 leading-relaxed max-w-2xl">
-              {{ activePhase().summary }}
-            </p>
-
-            <div class="pt-6 border-t border-white/10">
-              <p class="text-xs font-medium text-neutral-400 mb-4">Phase Deliverables</p>
-              <ul class="space-y-3">
-                @for (item of activePhase().deliverables; track item) {
-                  <li class="flex items-start gap-3 text-sm text-neutral-200">
-                    <span class="text-[#C8A97E] mt-0.5 font-mono" aria-hidden="true">—</span>
-                    <span>{{ item }}</span>
-                  </li>
-                }
-              </ul>
-            </div>
-          </div>
-
-          <div class="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
-            <span class="text-xs text-neutral-400">
-              Client milestone sign-off included at phase completion
-            </span>
-            <app-ui-button variant="ghost" size="sm" href="#contact">
-              Request sample project timeline →
-            </app-ui-button>
-          </div>
-        </div>
       </div>
-    </section>
 
-    <!-- Scroll-Driven Editorial Marquee Divider -->
-    <app-ui-marquee></app-ui-marquee>
-
-    <!-- Section 2: Services Bento + Interactive Materiality Palette -->
-    <section id="services" class="py-20 md:py-28 bg-[#080808]">
-      <div class="max-w-7xl mx-auto px-6">
-        <div appMotionReveal class="mb-12">
-          <app-ui-section-header
-            kicker="Studio Capabilities"
-            title="Integrated interior architecture and tactile craft"
-          ></app-ui-section-header>
-        </div>
-
-        <!-- Asymmetric Bento Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          @for (service of services; track service.index; let idx = $index) {
+      <!-- Residence Cards Grid -->
+      @if (filteredListings().length > 0) {
+        <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          @for (item of filteredListings(); track item.id; let i = $index) {
             <article
-              appMotionReveal
-              appMotionSpotlight
-              [motionDelay]="idx * 0.07"
-              class="bg-[#0E0E0E] border border-white/10 rounded-xl p-7 md:p-8 flex flex-col justify-between gap-6 transition-colors hover:border-white/20"
-              [ngClass]="service.featured ? 'md:col-span-2' : ''"
+              appReveal
+              [revealDelay]="i * 45"
+              class="smoked-slab-interactive group flex flex-col overflow-hidden rounded-2xl"
             >
-              <div class="space-y-4">
-                <div class="flex items-center justify-between gap-4 text-xs text-neutral-400">
-                  <span class="font-mono text-[#C8A97E] tabular-nums">{{ service.index }}.</span>
-                  <span>{{ service.scope }}</span>
-                </div>
-
-                <h3 class="font-serif text-2xl md:text-3xl text-white tracking-tight">
-                  {{ service.title }}
-                </h3>
-
-                <p class="text-sm md:text-base text-neutral-300 leading-relaxed max-w-2xl">
-                  {{ service.description }}
-                </p>
-              </div>
-
-              <ul class="pt-5 border-t border-white/10 space-y-2.5">
-                @for (outcome of service.outcomes; track outcome) {
-                  <li class="flex items-start gap-2.5 text-sm text-neutral-300">
-                    <span class="text-[#C8A97E] font-mono" aria-hidden="true">·</span>
-                    <span>{{ outcome }}</span>
-                  </li>
-                }
-              </ul>
-            </article>
-          }
-        </div>
-
-        <!-- Interactive Materiality & Finish Inspector -->
-        <div
-          appMotionReveal
-          [motionDelay]="0.1"
-          class="mt-10 bg-[#0E0E0E] border border-white/10 rounded-xl p-6 md:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center"
-        >
-          <div class="lg:col-span-5 space-y-4">
-            <p class="text-xs text-[#C8A97E]">Material Palette Inspector</p>
-            <h3 class="font-serif text-2xl md:text-3xl text-white tracking-tight">
-              Tactile finishes sourced for coastal longevity
-            </h3>
-            <p class="text-sm text-neutral-400 leading-relaxed">
-              Select a primary studio material to review quarry origin, surface finish, and how it
-              weathers across seasons.
-            </p>
-
-            <div class="grid grid-cols-2 gap-2.5 pt-2">
-              @for (mat of materials; track mat.id; let idx = $index) {
+              <div class="relative aspect-[4/3] w-full overflow-hidden bg-[#121217]">
                 <button
                   type="button"
-                  (click)="selectMaterial(idx)"
-                  class="px-3.5 py-2.5 text-left text-xs font-medium rounded-lg border transition-colors truncate cursor-pointer focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
+                  (click)="openListingModal(item)"
+                  class="block h-full w-full text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b9abff]"
+                >
+                  @if (!imageErrors()[item.id]) {
+                    <img
+                      [src]="item.image"
+                      [alt]="item.title + ' — ' + item.neighborhood"
+                      referrerPolicy="no-referrer"
+                      loading="lazy"
+                      decoding="async"
+                      (error)="markImageError(item.id)"
+                      class="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+                    />
+                  } @else {
+                    <div
+                      class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#1d1d26] to-[#0d0d11] p-6 text-center"
+                    >
+                      <span class="font-display text-2xl text-white/65">{{ item.title }}</span>
+                    </div>
+                  }
+                  <div
+                    class="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050507]/85 via-transparent to-transparent"
+                  ></div>
+                </button>
+
+                <!-- Save Shortlist Button -->
+                <button
+                  type="button"
+                  (click)="toggleSaved(item.id, $event)"
+                  [attr.aria-label]="isSaved(item.id) ? 'Remove from saved' : 'Save residence'"
+                  class="absolute right-3.5 top-3.5 z-10 inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium backdrop-blur-sm transition-colors duration-150"
                   [ngClass]="
-                    activeMaterialIndex() === idx
-                      ? 'bg-[#C8A97E] text-[#050505] border-[#C8A97E]'
-                      : 'bg-[#141414] text-neutral-300 border-white/10 hover:border-white/25'
+                    isSaved(item.id)
+                      ? 'border-[#b9abff]/65 bg-[#191824]/90 text-[#b9abff]'
+                      : 'border-white/20 bg-[#050507]/75 text-white/85 hover:border-white/40 hover:text-white'
                   "
                 >
-                  {{ mat.name }}
+                  <span>{{ isSaved(item.id) ? 'Saved' : 'Save' }}</span>
                 </button>
-              }
-            </div>
-          </div>
 
-          <div
-            #materialDetailCard
-            class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-12 gap-6 items-center"
-          >
-            <div
-              appMotionTilt
-              [maxTiltDeg]="4"
-              class="sm:col-span-5 h-48 sm:h-56 rounded-lg border border-white/10 shadow-lg"
-              [style.background]="activeMaterial().swatchStyle"
-              role="img"
-              [attr.aria-label]="activeMaterial().name + ' material surface sample'"
-            ></div>
-
-            <div class="sm:col-span-7 space-y-4">
-              <div>
-                <h4 class="font-serif text-2xl text-white">{{ activeMaterial().name }}</h4>
-                <p class="text-xs text-[#C8A97E] mt-1">
-                  {{ activeMaterial().origin }} · {{ activeMaterial().finish }}
-                </p>
-              </div>
-
-              <div class="space-y-3 text-sm border-t border-white/10 pt-4">
-                <div>
-                  <span class="text-neutral-400 block text-xs">Patina & Aging Behavior</span>
-                  <span class="text-neutral-200">{{ activeMaterial().patinaNote }}</span>
-                </div>
-                <div>
-                  <span class="text-neutral-400 block text-xs">Recommended Application</span>
-                  <span class="text-neutral-200">{{ activeMaterial().idealPairing }}</span>
+                <div class="pointer-events-none absolute bottom-3.5 left-4 right-4 flex items-baseline justify-between gap-2">
+                  <span class="text-xs font-medium text-[#36d67e]">{{ item.availability }}</span>
+                  <span class="font-mono-tabular text-base font-semibold text-white">
+                    ${{ item.monthlyRent | number }}<span class="text-[11px] font-normal text-white/65">/mo</span>
+                  </span>
                 </div>
               </div>
 
-              <div class="pt-2">
-                <app-ui-button
-                  variant="secondary"
-                  size="sm"
-                  href="#contact"
-                  (clicked)="applyMaterialToConsultation()"
-                >
-                  Use Finish in Consultation Brief
-                </app-ui-button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Split-Screen Daylight vs Twilight Architectural Comparison -->
-        <div
-          appMotionReveal
-          [motionDelay]="0.12"
-          class="mt-10 bg-[#0E0E0E] border border-white/10 rounded-xl p-6 md:p-8"
-        >
-          <app-ui-split-compare
-            [leftImage]="splitCompareLeft"
-            [rightImage]="splitCompareRight"
-            leftTag="Coastal Daylight Study"
-            leftLabel="Honed Quartzite & Fluted Walnut"
-            rightTag="Twilight Hearth Study"
-            rightLabel="Smoked Oak & Carved Limestone"
-          ></app-ui-split-compare>
-        </div>
-      </div>
-    </section>
-
-    <!-- Section 3: Portfolio Showcase (Reusable Filter Tabs + Lightbox Modal) -->
-    <section id="portfolio" class="py-20 md:py-28 max-w-7xl mx-auto px-6">
-      <div
-        appMotionReveal
-        class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10"
-      >
-        <app-ui-section-header
-          kicker="Selected Commissions"
-          title="Completed Residences"
-        ></app-ui-section-header>
-
-        <app-ui-tabs
-          [options]="portfolioTabOptions"
-          [activeValue]="selectedCategory()"
-          ariaLabel="Filter portfolio by category"
-          (valueChange)="setCategory($event)"
-        ></app-ui-tabs>
-      </div>
-
-      <!-- Gallery Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @for (project of filteredProjects(); track project.id; let idx = $index) {
-          <article
-            appMotionReveal
-            appMotionSpotlight
-            appMotionTilt
-            [maxTiltDeg]="1.6"
-            [motionDelay]="idx * 0.06"
-            class="group bg-[#0A0A0A] border border-white/10 rounded-xl overflow-hidden flex flex-col justify-between transition-colors hover:border-[#C8A97E]/45"
-            [ngClass]="idx === 0 && filteredProjects().length > 2 ? 'lg:col-span-2' : ''"
-          >
-            <button
-              type="button"
-              (click)="openLightbox(project)"
-              class="text-left w-full flex flex-col h-full cursor-pointer focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
-            >
-              <div
-                appMotionPanelWipe
-                [wipeDelay]="idx * 0.05"
-                class="relative w-full overflow-hidden bg-[#141414]"
-                [ngClass]="idx === 0 && filteredProjects().length > 2 ? 'aspect-[16/10]' : 'aspect-[4/3]'"
-              >
-                @if (!failedProjectImages()[project.id]) {
-                  <img
-                    appMotionMediaReveal
-                    [mediaDelay]="idx * 0.05"
-                    [src]="project.image"
-                    [alt]="project.title"
-                    referrerPolicy="no-referrer"
-                    loading="lazy"
-                    decoding="async"
-                    (error)="markProjectImageFailed(project.id)"
-                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                  />
-                } @else {
-                  <div
-                    class="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-[#161412] to-[#0c0c0c]"
-                  >
-                    <span class="font-serif text-xl text-[#C8A97E]">{{ project.title }}</span>
-                    <span class="text-xs text-neutral-400 mt-1">{{ project.location }}</span>
-                  </div>
-                }
-                <div
-                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-70"
-                ></div>
-              </div>
-
-              <div class="p-6 flex-1 flex flex-col justify-between gap-4 w-full">
+              <div class="flex flex-1 flex-col justify-between p-6">
                 <div>
-                  <div class="flex items-center gap-2 text-xs text-neutral-400">
-                    <span class="text-[#C8A97E]">{{ project.category }}</span>
+                  <div class="flex items-center gap-2 text-xs text-white/50">
+                    <span>{{ item.category }}</span>
                     <span aria-hidden="true">·</span>
-                    <span>{{ project.location }}</span>
-                    <span aria-hidden="true">·</span>
-                    <span class="font-mono tabular-nums">{{ project.areaSqFt }}</span>
+                    <span>{{ item.neighborhood }}</span>
                   </div>
 
-                  <h3 class="mt-2 font-serif text-2xl text-white group-hover:text-[#C8A97E] transition-colors">
-                    {{ project.title }}
+                  <h3 class="font-display mt-2 text-2xl font-medium tracking-tight text-white">
+                    {{ item.title }}
                   </h3>
 
-                  <p class="mt-2 text-sm text-neutral-400 leading-relaxed">
-                    {{ project.summary }}
+                  <p class="font-mono-tabular mt-2 text-xs text-white/70">
+                    {{ item.beds }} Bed · {{ item.baths }} Bath · {{ item.sqft | number }} sq ft ·
+                    {{ item.furnished ? 'Furnished' : 'Unfurnished' }}
+                  </p>
+
+                  <p class="mt-3 line-clamp-2 text-sm leading-relaxed text-white/58">
+                    {{ item.summary }}
                   </p>
                 </div>
 
-                <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
-                  <span class="text-neutral-400 font-mono tabular-nums">
-                    Completed {{ project.year }}
-                  </span>
-                  <span class="text-white font-medium group-hover:text-[#C8A97E] transition-colors">
-                    Inspect Residence →
-                  </span>
+                <div
+                  class="mt-5 flex items-center justify-between gap-3 border-t border-white/[0.08] pt-4"
+                >
+                  <button
+                    type="button"
+                    (click)="openListingModal(item)"
+                    class="text-xs font-medium text-white/85 transition-colors hover:text-[#b9abff]"
+                  >
+                    Floor Specs &amp; Lease →
+                  </button>
+                  <button
+                    type="button"
+                    (click)="bookResidence(item)"
+                    class="shrink-0 whitespace-nowrap rounded-lg bg-[#ececf0] px-3.5 py-2 text-xs font-semibold text-[#09090d] transition-colors duration-150 hover:bg-[#36d67e] hover:text-[#04140a]"
+                  >
+                    Book Viewing
+                  </button>
                 </div>
               </div>
-            </button>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="smoked-slab mt-8 flex flex-col items-center rounded-2xl p-12 text-center">
+          <p class="font-display text-2xl text-white">No residences match your current filters.</p>
+          <p class="mt-2 text-sm text-white/55">
+            Adjust bedroom count, furnishing, or search keywords to view active leases.
+          </p>
+          <button
+            type="button"
+            (click)="resetFilters()"
+            class="mt-6 rounded-lg bg-[#ececf0] px-5 py-2.5 text-xs font-semibold text-[#09090d] transition-colors hover:bg-[#36d67e]"
+          >
+            Show All Residences
+          </button>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Full-Service Rental & Property Management Offerings -->
+  <section id="services" class="lazy-section border-t border-white/[0.08] py-16 sm:py-22">
+    <div class="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-10">
+      <div appReveal class="max-w-2xl">
+        <p class="text-xs font-medium uppercase tracking-[0.18em] text-white/45">
+          Leasing Services
+        </p>
+        <h2
+          class="font-display mt-3 text-3xl font-medium tracking-tight text-white sm:text-5xl text-balance"
+        >
+          Every service required for effortless tenancy &amp; estate stewardship.
+        </h2>
+      </div>
+
+      <div class="mt-10 grid gap-5 md:grid-cols-3">
+        @for (service of services; track service.code; let i = $index) {
+          <article
+            appReveal
+            [revealDelay]="i * 55"
+            class="smoked-slab-interactive flex flex-col justify-between rounded-2xl p-7"
+            [ngClass]="service.span === 'wide' ? 'md:col-span-2' : 'md:col-span-1'"
+          >
+            <div>
+              <div class="flex items-center justify-between gap-4">
+                <span class="font-mono-tabular text-xs text-white/45">{{ service.code }}.</span>
+                <app-tooltip [text]="service.tooltip" position="top" />
+              </div>
+
+              <h3 class="font-display mt-4 text-2xl font-medium tracking-tight text-white sm:text-3xl">
+                {{ service.title }}
+              </h3>
+              <p class="mt-3 max-w-2xl text-sm leading-relaxed text-white/62">
+                {{ service.summary }}
+              </p>
+            </div>
+
+            <ul class="mt-6 space-y-2.5 border-t border-white/[0.08] pt-5 text-xs text-white/70">
+              @for (point of service.highlights; track point) {
+                <li class="flex items-center gap-2.5">
+                  <span class="h-1 w-1 rounded-full bg-[#b9abff]" aria-hidden="true"></span>
+                  <span>{{ point }}</span>
+                </li>
+              }
+            </ul>
           </article>
         }
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Section 4: Client Testimonials -->
-    <section id="testimonials" class="py-20 md:py-28 border-t border-white/10 bg-[#080808]">
-      <div class="max-w-7xl mx-auto px-6">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          <div appMotionReveal class="lg:col-span-4 space-y-5">
-            <p class="text-xs text-[#C8A97E]">Client Perspectives</p>
-            <h2 class="font-serif text-3xl md:text-4xl font-medium text-white tracking-tight [text-wrap:balance]">
-              Measured outcomes from commissioned homes
+  <!-- 4-Step Leasing Process -->
+  <section id="process" class="lazy-section border-t border-white/[0.08] py-16 sm:py-22">
+    <div class="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-10">
+      <div appReveal class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+        <div>
+          <p class="text-xs font-medium uppercase tracking-[0.18em] text-white/45">
+            How Leasing Works
+          </p>
+          <h2
+            class="font-display mt-3 text-3xl font-medium tracking-tight text-white sm:text-5xl text-balance"
+          >
+            From private tour to keyless move-in in four clear steps.
+          </h2>
+        </div>
+        <p class="max-w-md text-sm leading-relaxed text-white/58">
+          Direct digital leases with transparent escrow deposit protection and 48-hour approval.
+        </p>
+      </div>
+
+      <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        @for (phase of processSteps; track phase.step; let i = $index) {
+          <article
+            appReveal
+            [revealDelay]="i * 55"
+            class="smoked-slab-interactive flex flex-col justify-between rounded-2xl p-6"
+          >
+            <div>
+              <div class="flex items-center justify-between text-xs text-white/45">
+                <span class="font-mono-tabular text-[#b9abff]">{{ phase.step }}.</span>
+                <span class="font-mono-tabular">{{ phase.timing }}</span>
+              </div>
+              <h3 class="font-display mt-4 text-2xl font-medium tracking-tight text-white">
+                {{ phase.title }}
+              </h3>
+              <p class="mt-3 text-sm leading-relaxed text-white/60">
+                {{ phase.description }}
+              </p>
+            </div>
+            <p class="mt-6 border-t border-white/[0.08] pt-4 text-xs text-white/48">
+              {{ phase.deliverable }}
+            </p>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Lease Cost & Move-In Estimator -->
+  <section id="estimator" class="lazy-section border-t border-white/[0.08] py-16 sm:py-22">
+    <div class="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-10">
+      <div class="smoked-slab rounded-[24px] p-6 sm:p-10 lg:p-12">
+        <div class="grid gap-10 lg:grid-cols-12">
+          <div class="lg:col-span-6">
+            <div class="flex items-center gap-2">
+              <p class="text-xs font-medium uppercase tracking-[0.18em] text-white/45">
+                Interactive Lease Calculator
+              </p>
+              <app-tooltip
+                text="Calculate exact monthly rent, 24-month extended lease savings, optional add-ons, and total refundable deposit."
+                position="top"
+              />
+            </div>
+            <h2 class="font-display mt-3 text-3xl font-medium tracking-tight text-white sm:text-4xl">
+              Estimate monthly rent &amp; move-in schedule.
             </h2>
 
-            <div class="flex flex-col gap-2 pt-2">
-              @for (item of testimonials; track item.id; let idx = $index) {
+            <div class="mt-7 space-y-5">
+              <div>
+                <label class="mb-2 block text-xs font-medium text-white/70">Select Residence</label>
+                <app-glass-dropdown
+                  [ngModel]="estimatorResidenceId()"
+                  (ngModelChange)="selectForEstimator($event)"
+                  [options]="residenceDropdownOptions"
+                />
+              </div>
+
+              <div>
+                <span class="mb-2 block text-xs font-medium text-white/70">Lease Duration</span>
+                <div class="grid grid-cols-3 gap-2 rounded-xl border border-white/10 bg-[#111115] p-1">
+                  @for (term of estimatorResidence().leaseTerms; track term) {
+                    <button
+                      type="button"
+                      (click)="estimatorTerm.set(term)"
+                      class="rounded-lg px-3 py-2 text-xs font-medium transition-colors duration-150"
+                      [ngClass]="
+                        estimatorTerm() === term
+                          ? 'bg-[#ececf0] text-[#09090d]'
+                          : 'text-white/65 hover:text-white'
+                      "
+                    >
+                      {{ term }}
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <div class="grid gap-3 sm:grid-cols-2">
                 <button
                   type="button"
-                  (click)="selectTestimonial(idx)"
-                  class="text-left p-4 rounded-lg border transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-[#C8A97E]"
+                  (click)="estimatorEvBay.set(!estimatorEvBay())"
+                  class="flex items-center justify-between rounded-xl border px-4 py-3 text-left text-xs transition-colors duration-150"
                   [ngClass]="
-                    activeTestimonialIndex() === idx
-                      ? 'bg-[#141311] border-[#C8A97E]/60'
-                      : 'bg-[#0D0D0D] border-white/10 hover:border-white/20'
+                    estimatorEvBay()
+                      ? 'border-[#b9abff]/60 bg-[#b9abff]/12 text-white'
+                      : 'border-white/12 bg-[#121217] text-white/70 hover:border-white/25'
                   "
                 >
-                  <p class="text-sm font-medium text-white">{{ item.clientName }}</p>
-                  <p class="text-xs text-neutral-400 mt-0.5">{{ item.location }}</p>
+                  <span>Dedicated EV Bay</span>
+                  <span class="font-mono-tabular">+$450/mo</span>
                 </button>
-              }
+
+                <button
+                  type="button"
+                  [disabled]="estimatorResidence().furnished"
+                  (click)="estimatorFurnishedPkg.set(!estimatorFurnishedPkg())"
+                  class="flex items-center justify-between rounded-xl border px-4 py-3 text-left text-xs transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-60"
+                  [ngClass]="
+                    estimatorResidence().furnished || estimatorFurnishedPkg()
+                      ? 'border-[#36d67e]/55 bg-[#36d67e]/10 text-white'
+                      : 'border-white/12 bg-[#121217] text-white/70 hover:border-white/25'
+                  "
+                >
+                  <span>
+                    {{ estimatorResidence().furnished ? 'Designer Furnished' : 'Add Furniture Suite' }}
+                  </span>
+                  <span class="font-mono-tabular">
+                    {{ estimatorResidence().furnished ? 'Included' : '+$1,150/mo' }}
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
 
           <div
-            #testimonialQuoteCard
-            appMotionReveal
-            appMotionSpotlight
-            [motionDelay]="0.1"
-            class="lg:col-span-8 bg-[#0E0E0E] border border-white/10 rounded-xl p-8 md:p-12 space-y-8"
+            class="flex flex-col justify-between rounded-2xl border border-white/12 bg-[#0e0e13] p-6 sm:p-8 lg:col-span-6"
           >
-            <div class="text-xs text-neutral-400 flex flex-wrap items-center gap-2">
-              <span class="text-[#C8A97E]">{{ activeTestimonial().projectTitle }}</span>
-              <span aria-hidden="true">·</span>
-              <span>{{ activeTestimonial().location }}</span>
+            <div>
+              <div class="flex items-center justify-between text-xs text-white/50">
+                <span>{{ estimatorResidence().neighborhood }}</span>
+                <span class="font-mono-tabular">{{ estimatorTerm() }}</span>
+              </div>
+              <h3 class="font-display mt-2 text-2xl font-medium text-white">
+                {{ estimatorResidence().title }}
+              </h3>
+
+              <dl class="mt-6 space-y-3 border-t border-white/10 pt-5 text-sm">
+                <div class="flex items-center justify-between">
+                  <dt class="text-white/60">Base Monthly Rent</dt>
+                  <dd class="font-mono-tabular text-white">
+                    ${{ estimatorBreakdown().adjustedBase | number }}
+                  </dd>
+                </div>
+                @if (estimatorBreakdown().evAddon > 0) {
+                  <div class="flex items-center justify-between">
+                    <dt class="text-white/60">Dedicated EV Charging Bay</dt>
+                    <dd class="font-mono-tabular text-white">+$450</dd>
+                  </div>
+                }
+                @if (estimatorBreakdown().furnishedAddon > 0) {
+                  <div class="flex items-center justify-between">
+                    <dt class="text-white/60">Curated Furnishing Package</dt>
+                    <dd class="font-mono-tabular text-white">+$1,150</dd>
+                  </div>
+                }
+                <div class="flex items-center justify-between">
+                  <dt class="text-white/60">
+                    Refundable Escrow Deposit ({{ estimatorResidence().depositMonths }}× mo)
+                  </dt>
+                  <dd class="font-mono-tabular text-white">
+                    ${{ estimatorBreakdown().deposit | number }}
+                  </dd>
+                </div>
+              </dl>
             </div>
 
-            <blockquote class="font-serif text-2xl md:text-3xl text-white leading-snug">
-              “{{ activeTestimonial().quote }}”
-            </blockquote>
-
-            <div
-              class="pt-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-            >
-              <div>
-                <p class="text-sm font-medium text-white">{{ activeTestimonial().clientName }}</p>
-                <p class="text-xs text-neutral-400">{{ activeTestimonial().role }}</p>
+            <div class="mt-6 border-t border-white/10 pt-5">
+              <div class="flex items-baseline justify-between">
+                <span class="text-xs uppercase tracking-[0.16em] text-white/50">
+                  Estimated Monthly Total
+                </span>
+                <span class="font-mono-tabular text-3xl font-semibold text-white">
+                  ${{ estimatorBreakdown().monthlyTotal | number }}
+                </span>
               </div>
+              <div class="mt-2 flex items-center justify-between text-xs">
+                <span class="text-white/50">Due at Keyless Move-In (1st Mo + Deposit)</span>
+                <span class="font-mono-tabular text-[#b9abff]">
+                  ${{ estimatorBreakdown().firstMonthAndDeposit | number }}
+                </span>
+              </div>
+              @if (estimatorBreakdown().annualSavings > 0) {
+                <p class="mt-2 font-mono-tabular text-xs text-[#36d67e]">
+                  24-Month Preferred Rate saves ${{ estimatorBreakdown().annualSavings | number }}
+                  / year
+                </p>
+              }
 
-              <p class="text-xs text-[#C8A97E] max-w-xs sm:text-right">
-                {{ activeTestimonial().outcome }}
-              </p>
+              <button
+                type="button"
+                (click)="bookResidence(estimatorResidence())"
+                class="mt-6 w-full rounded-xl bg-[#ececf0] px-5 py-3 text-xs font-semibold text-[#09090d] transition-colors duration-150 hover:bg-[#36d67e] hover:text-[#04140a]"
+              >
+                Reserve Viewing for {{ estimatorResidence().title }}
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Section 5: Consultation Booking with Reusable Custom Dropdowns -->
-    <section id="contact" class="py-20 md:py-28 max-w-7xl mx-auto px-6">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        <div appMotionReveal class="lg:col-span-5 space-y-6">
-          <p class="text-xs text-[#C8A97E]">Private Commissions</p>
-          <h2 class="font-serif text-3xl md:text-5xl font-medium text-white tracking-tight [text-wrap:balance]">
-            Begin a spatial dialogue with our studio
-          </h2>
-          <p class="text-sm md:text-base text-neutral-400 leading-relaxed">
-            We accept eight full-home commissions annually to preserve principal-level attention on
-            every stone, millwork detail, and site visit.
-          </p>
+  <!-- Verified Resident & Owner Reviews -->
+  <section id="testimonials" class="lazy-section border-t border-white/[0.08] py-16 sm:py-22">
+    <div class="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-10">
+      <div appReveal class="max-w-2xl">
+        <p class="text-xs font-medium uppercase tracking-[0.18em] text-white/45">
+          Resident &amp; Owner Reviews
+        </p>
+        <h2
+          class="font-display mt-3 text-3xl font-medium tracking-tight text-white sm:text-5xl text-balance"
+        >
+          Trusted by relocating residents &amp; estate owners.
+        </h2>
+      </div>
 
-          <div class="pt-4 border-t border-white/10 space-y-4 text-sm">
-            <div>
-              <p class="text-xs text-neutral-400">Studio Offices</p>
-              <p class="text-neutral-200 mt-1">Malibu · London · Lisbon</p>
-            </div>
-            <div>
-              <p class="text-xs text-neutral-400">Direct Architectural Desk</p>
-              <div class="mt-1 flex items-center gap-3">
-                <a
-                  href="mailto:studio@coastalinterio.com"
-                  class="text-[#C8A97E] hover:text-white transition-colors"
-                >
-                  studio&#64;coastalinterio.com
-                </a>
-                <button
-                  type="button"
-                  (click)="copyStudioEmail()"
-                  class="text-xs text-neutral-400 hover:text-white transition-colors underline underline-offset-4 cursor-pointer"
-                >
-                  Copy
-                </button>
-              </div>
-            </div>
-            <div>
-              <p class="text-xs text-neutral-400">Response Window</p>
-              <p class="text-neutral-200 mt-1">Within 2 business days with principal availability</p>
+      <div class="mt-10 grid gap-5 lg:grid-cols-3">
+        @for (item of reviews; track item.author; let i = $index) {
+          <blockquote
+            appReveal
+            [revealDelay]="i * 55"
+            class="smoked-slab flex flex-col justify-between rounded-2xl p-7"
+          >
+            <p class="font-display text-xl leading-relaxed text-white/88 sm:text-2xl">
+              “{{ item.quote }}”
+            </p>
+            <footer class="mt-7 border-t border-white/[0.08] pt-5">
+              <p class="text-sm font-semibold text-white">{{ item.author }}</p>
+              <p class="mt-0.5 text-xs text-white/52">
+                {{ item.role }} · {{ item.residence }}
+              </p>
+              <p class="mt-2 font-mono-tabular text-[11px] text-[#36d67e]">
+                {{ item.outcome }}
+              </p>
+            </footer>
+          </blockquote>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Schedule Viewing / Rental Application Form -->
+  <section id="consultation" class="lazy-section border-t border-white/[0.08] py-16 sm:py-24">
+    <div class="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-10">
+      <div class="smoked-slab rounded-[24px] p-7 sm:p-12 lg:p-14">
+        <div class="grid gap-12 lg:grid-cols-12">
+          <div class="lg:col-span-5">
+            <p class="text-xs font-medium uppercase tracking-[0.18em] text-white/45">
+              Private Viewing &amp; Leasing Desk
+            </p>
+            <h2
+              class="font-display mt-3 text-3xl font-medium tracking-tight text-white sm:text-5xl text-balance"
+            >
+              Book a private tour or request lease terms.
+            </h2>
+            <p class="mt-5 text-sm leading-relaxed text-white/62">
+              In-person twilight tours and live 4K video walkthroughs are scheduled daily. Submit
+              your preferred residence and move-in window for same-day confirmation.
+            </p>
+
+            <div class="mt-8 space-y-3 border-t border-white/10 pt-6 text-xs text-white/55">
+              <p>Leasing Gallery · 418 Ocean Avenue, Carmel-by-the-Sea</p>
+              <p>Concierge Desk · leasing&#64;coastalestates.rentals</p>
+              <p class="font-mono-tabular">Approval turnaround · Within 48 hours</p>
             </div>
           </div>
-        </div>
 
-        <div
-          appMotionReveal
-          [motionDelay]="0.1"
-          class="lg:col-span-7 bg-[#0A0A0A] border border-white/10 rounded-xl p-6 md:p-10"
-        >
-          @if (!inquirySubmitted()) {
-            <form [formGroup]="inquiryForm" (ngSubmit)="submitInquiry()" class="space-y-6" novalidate>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <app-ui-field
-                  label="Full Name"
-                  forId="fullName"
-                  [errorText]="getFieldError('fullName')"
+          <div class="lg:col-span-7">
+            @if (formSubmitted()) {
+              <div
+                class="flex h-full flex-col justify-center rounded-2xl border border-[#36d67e]/35 bg-[#36d67e]/[0.07] p-8"
+              >
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#36d67e]">
+                  Viewing Confirmed
+                </p>
+                <h3 class="font-display mt-3 text-3xl font-medium text-white">
+                  Thank you, {{ submittedName() }}.
+                </h3>
+                <p class="mt-3 max-w-lg text-sm leading-relaxed text-white/75">
+                  Our senior leasing specialist has reserved your private tour request for
+                  <strong class="text-white">{{ submittedResidenceTitle() }}</strong> and will send
+                  exact showing times and floor plans shortly.
+                </p>
+                <button
+                  type="button"
+                  (click)="resetBooking()"
+                  class="mt-6 inline-flex w-fit items-center rounded-lg border border-white/20 px-4 py-2 text-xs font-medium text-white transition-colors hover:border-white/40"
                 >
+                  Schedule Another Viewing
+                </button>
+              </div>
+            } @else {
+              <form
+                [formGroup]="bookingForm"
+                (ngSubmit)="submitBooking()"
+                class="grid gap-5 sm:grid-cols-2"
+                novalidate
+              >
+                <div>
+                  <label for="fullName" class="mb-2 block text-xs font-medium text-white/70">
+                    Full Name
+                  </label>
                   <input
                     id="fullName"
                     type="text"
                     formControlName="fullName"
-                    placeholder="Claire Lindqvist"
-                    class="w-full px-4 py-3 bg-[#121212] border border-white/10 rounded-lg text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-[#C8A97E]"
+                    placeholder="Elena Lindqvist"
+                    class="w-full rounded-xl border border-white/12 bg-[#121217]/95 px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:border-[#b9abff]/60 focus:outline-none"
                   />
-                </app-ui-field>
+                  @if (showError('fullName')) {
+                    <p class="mt-1.5 text-xs text-rose-400">Please enter your full name.</p>
+                  }
+                </div>
 
-                <app-ui-field
-                  label="Email Address"
-                  forId="email"
-                  [errorText]="getFieldError('email')"
-                >
+                <div>
+                  <label for="email" class="mb-2 block text-xs font-medium text-white/70">
+                    Email Address
+                  </label>
                   <input
                     id="email"
                     type="email"
                     formControlName="email"
-                    placeholder="claire@residence.com"
-                    class="w-full px-4 py-3 bg-[#121212] border border-white/10 rounded-lg text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-[#C8A97E]"
+                    placeholder="elena&#64;domain.com"
+                    class="w-full rounded-xl border border-white/12 bg-[#121217]/95 px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:border-[#b9abff]/60 focus:outline-none"
                   />
-                </app-ui-field>
-              </div>
+                  @if (showError('email')) {
+                    <p class="mt-1.5 text-xs text-rose-400">Please enter a valid email.</p>
+                  }
+                </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <app-ui-field label="Project Category" forId="residenceType">
-                  <app-ui-select
-                    inputId="residenceType"
-                    formControlName="residenceType"
-                    [options]="residenceTypeOptions"
-                    placeholder="Select project category"
-                  ></app-ui-select>
-                </app-ui-field>
+                <div class="sm:col-span-2">
+                  <div class="mb-2 flex items-center gap-2">
+                    <span class="text-xs font-medium text-white/70">Preferred Residence</span>
+                    <app-tooltip
+                      text="You may combine multiple saved residences during your private tour."
+                      position="top"
+                    />
+                  </div>
+                  <app-glass-dropdown
+                    formControlName="residenceId"
+                    [options]="residenceDropdownOptions"
+                    placeholder="Choose a residence"
+                  />
+                </div>
 
-                <app-ui-field label="Estimated Scale" forId="scaleSqFt">
-                  <app-ui-select
-                    inputId="scaleSqFt"
-                    formControlName="scaleSqFt"
-                    [options]="scaleOptions"
-                    placeholder="Select floor area"
-                  ></app-ui-select>
-                </app-ui-field>
-              </div>
+                <div>
+                  <label class="mb-2 block text-xs font-medium text-white/70">Lease Term</label>
+                  <app-glass-dropdown
+                    formControlName="leaseTerm"
+                    [options]="leaseTermOptions"
+                    placeholder="Select lease term"
+                  />
+                </div>
 
-              <app-ui-field
-                label="Preferred Material Direction"
-                forId="materialDirection"
-                hint="Pre-populated if you select a finish from the Material Palette Inspector above."
-              >
-                <app-ui-select
-                  inputId="materialDirection"
-                  formControlName="materialDirection"
-                  [options]="materialDirectionOptions"
-                  [searchable]="true"
-                  placeholder="Select material palette"
-                ></app-ui-select>
-              </app-ui-field>
+                <div>
+                  <label class="mb-2 block text-xs font-medium text-white/70">Move-In Window</label>
+                  <app-glass-dropdown
+                    formControlName="moveInWindow"
+                    [options]="moveInOptions"
+                    placeholder="Select move-in date"
+                  />
+                </div>
 
-              <app-ui-field
-                label="Architectural Context & Target Timeline"
-                forId="projectNotes"
-                [errorText]="getFieldError('projectNotes')"
-              >
-                <textarea
-                  id="projectNotes"
-                  rows="4"
-                  formControlName="projectNotes"
-                  placeholder="Share location, architectural stage (new build or renovation), and preferred material sensibility..."
-                  class="w-full px-4 py-3 bg-[#121212] border border-white/10 rounded-lg text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-[#C8A97E] custom-scroll"
-                ></textarea>
-              </app-ui-field>
+                <div class="sm:col-span-2">
+                  <label for="notes" class="mb-2 block text-xs font-medium text-white/70">
+                    Viewing Preference &amp; Requirements
+                  </label>
+                  <textarea
+                    id="notes"
+                    rows="3"
+                    formControlName="notes"
+                    placeholder="In-person sunset walkthrough or live 4K video tour, pets, parking needs..."
+                    class="w-full rounded-xl border border-white/12 bg-[#121217]/95 px-4 py-3 text-sm text-white placeholder:text-white/30 focus:border-[#b9abff]/60 focus:outline-none"
+                  ></textarea>
+                </div>
 
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-                <p class="text-xs text-neutral-400">
-                  Initial 45-minute architectural review is complimentary.
-                </p>
-                <app-ui-button type="submit" variant="primary" size="md">
-                  Request Consultation
-                </app-ui-button>
-              </div>
-            </form>
-          } @else {
-            <div class="py-6 space-y-6">
-              <div class="space-y-3">
-                <p class="text-xs text-[#C8A97E]">Consultation Request Logged</p>
-                <h3 class="font-serif text-3xl text-white">
-                  Thank you, {{ submittedSummary()?.fullName }}.
-                </h3>
-                <p class="text-sm text-neutral-300 leading-relaxed max-w-lg">
-                  Our architectural desk has received your inquiry for a
-                  <span class="text-white">{{ submittedSummary()?.residenceType }}</span>
-                  ({{ submittedSummary()?.scaleSqFt }},
-                  <span class="text-white">{{ submittedSummary()?.materialDirection }}</span>). A
-                  principal architect will follow up at
-                  <span class="text-white">{{ submittedSummary()?.email }}</span> within 2 business
-                  days.
-                </p>
-              </div>
-
-              <app-ui-button variant="secondary" size="sm" (clicked)="resetInquiry()">
-                Submit Another Inquiry
-              </app-ui-button>
-            </div>
-          }
+                <div class="sm:col-span-2 flex flex-wrap items-center justify-between gap-4 pt-2">
+                  <p class="text-xs text-white/45">
+                    Zero brokerage surcharge · Direct architectural escrow lease.
+                  </p>
+                  <button
+                    type="submit"
+                    class="inline-flex h-11 shrink-0 items-center justify-center rounded-lg bg-[#ececf0] px-6 text-sm font-semibold text-[#09090d] transition-colors duration-150 hover:bg-[#36d67e] hover:text-[#04140a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#36d67e]"
+                  >
+                    Confirm Viewing Request
+                  </button>
+                </div>
+              </form>
+            }
+          </div>
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
+</main>
 
-  <!-- Quiet Editorial Footer -->
-  <footer class="border-t border-white/10 bg-[#050505] py-12">
+<!-- Quiet Architectural Footer -->
+<footer class="border-t border-white/[0.08] bg-[#050507] py-10">
+  <div
+    class="mx-auto flex max-w-[1320px] flex-col items-start justify-between gap-6 px-4 text-xs text-white/45 sm:flex-row sm:items-center sm:px-6 lg:px-10"
+  >
+    <span class="font-display text-base font-medium text-white/85">Coastal Estates</span>
+    <div class="flex flex-wrap items-center gap-5">
+      @for (link of navLinks; track link.id) {
+        <a [href]="'#' + link.id" class="transition-colors hover:text-white">{{ link.label }}</a>
+      }
+    </div>
+    <span>© 2026 Coastal Estates Residential Leasing</span>
+  </div>
+</footer>
+
+<!-- Property Detail & Lease Specs Lightbox Modal -->
+@if (activeListing()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-[#050507]/90 p-4 sm:p-8"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="activeListing()!.title"
+    (click)="closeListingModal()"
+  >
     <div
-      class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+      class="smoked-slab relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl"
+      (click)="$event.stopPropagation()"
     >
-      <div class="space-y-1">
-        <p class="font-serif text-lg text-white">Coastal Interio</p>
-        <p class="text-xs text-neutral-400">
-          Architectural Interior Design · Malibu · London · Lisbon
-        </p>
+      <button
+        type="button"
+        (click)="closeListingModal()"
+        aria-label="Close residence details"
+        class="absolute right-4 top-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-[#050507]/85 text-white transition-colors hover:border-[#b9abff] hover:text-[#b9abff]"
+      >
+        ✕
+      </button>
+
+      <div class="aspect-[16/9] w-full overflow-hidden bg-[#121217]">
+        <img
+          [src]="activeListing()!.image"
+          [alt]="activeListing()!.title"
+          referrerPolicy="no-referrer"
+          class="h-full w-full object-cover"
+        />
       </div>
 
-      <div class="flex flex-wrap items-center gap-6 text-xs text-neutral-400">
-        @for (link of navLinks; track link.id) {
-          <a [href]="'#' + link.id" class="hover:text-white transition-colors">
-            {{ link.label }}
-          </a>
+      <div class="p-6 sm:p-9">
+        <div class="flex flex-wrap items-baseline justify-between gap-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2 text-xs text-white/50">
+              <span>{{ activeListing()!.category }}</span>
+              <span aria-hidden="true">·</span>
+              <span>{{ activeListing()!.neighborhood }}</span>
+              <span aria-hidden="true">·</span>
+              <span class="text-[#36d67e]">{{ activeListing()!.availability }}</span>
+            </div>
+            <h3 class="font-display mt-2 text-3xl font-medium text-white sm:text-4xl">
+              {{ activeListing()!.title }}
+            </h3>
+          </div>
+
+          <div class="text-right">
+            <p class="font-mono-tabular text-2xl font-semibold text-white sm:text-3xl">
+              ${{ activeListing()!.monthlyRent | number
+              }}<span class="text-sm font-normal text-white/60"> / mo</span>
+            </p>
+            <p class="font-mono-tabular text-xs text-white/50">
+              Deposit: {{ activeListing()!.depositMonths }}× monthly rent
+            </p>
+          </div>
+        </div>
+
+        <p class="font-mono-tabular mt-4 text-xs text-[#b9abff]">
+          {{ activeListing()!.beds }} Beds · {{ activeListing()!.baths }} Baths ·
+          {{ activeListing()!.sqft | number }} sq ft · {{ activeListing()!.parkingSpaces }} EV
+          Parking · {{ activeListing()!.petFriendly ? 'Pet Friendly' : 'No Pets' }}
+        </p>
+
+        <p class="mt-4 text-sm leading-relaxed text-white/70 sm:text-base">
+          {{ activeListing()!.summary }}
+        </p>
+
+        <div class="mt-6 grid gap-5 border-t border-white/10 pt-6 sm:grid-cols-2">
+          <div>
+            <p class="text-[11px] uppercase tracking-[0.16em] text-white/45">
+              Architectural Highlights
+            </p>
+            <p class="mt-2 text-sm text-white/85">
+              {{ activeListing()!.highlights.join(' · ') }}
+            </p>
+          </div>
+          <div>
+            <p class="text-[11px] uppercase tracking-[0.16em] text-white/45">
+              Included Amenities
+            </p>
+            <p class="mt-2 text-sm text-white/85">
+              {{ activeListing()!.amenities.join(' · ') }}
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-7 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6">
+          <button
+            type="button"
+            (click)="toggleSaved(activeListing()!.id)"
+            class="rounded-xl border border-white/20 px-5 py-2.5 text-xs font-medium text-white transition-colors hover:border-[#b9abff] hover:text-[#b9abff]"
+          >
+            {{ isSaved(activeListing()!.id) ? 'Saved in Shortlist' : 'Save to Shortlist' }}
+          </button>
+
+          <button
+            type="button"
+            (click)="bookResidence(activeListing()!)"
+            class="rounded-xl bg-[#ececf0] px-6 py-3 text-xs font-semibold text-[#09090d] transition-colors hover:bg-[#36d67e] hover:text-[#04140a]"
+          >
+            Schedule Private Viewing
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Saved Residences Shortlist Slide-Over Drawer -->
+@if (savedDrawerOpen()) {
+  <div
+    class="fixed inset-0 z-50 flex justify-end bg-[#050507]/80"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Saved Residences Shortlist"
+    (click)="savedDrawerOpen.set(false)"
+  >
+    <aside
+      class="smoked-slab flex h-full w-full max-w-md flex-col justify-between p-6 sm:p-7"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="overflow-y-auto pr-1">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+          <div>
+            <p class="text-[11px] uppercase tracking-[0.16em] text-white/45">Shortlist</p>
+            <h3 class="font-display text-2xl font-medium text-white">
+              Saved Residences ({{ savedListings().length }})
+            </h3>
+          </div>
+          <button
+            type="button"
+            (click)="savedDrawerOpen.set(false)"
+            aria-label="Close shortlist"
+            class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-white/80 hover:border-[#b9abff] hover:text-[#b9abff]"
+          >
+            ✕
+          </button>
+        </div>
+
+        @if (savedListings().length > 0) {
+          <div class="mt-5 space-y-4">
+            @for (item of savedListings(); track item.id) {
+              <div class="rounded-xl border border-white/12 bg-[#121217] p-4">
+                <div class="flex gap-3.5">
+                  <img
+                    [src]="item.image"
+                    [alt]="item.title"
+                    referrerPolicy="no-referrer"
+                    class="h-16 w-20 shrink-0 rounded-lg object-cover"
+                  />
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate text-sm font-semibold text-white">{{ item.title }}</p>
+                    <p class="mt-0.5 text-xs text-white/55">{{ item.neighborhood }}</p>
+                    <p class="font-mono-tabular mt-1 text-xs text-[#b9abff]">
+                      ${{ item.monthlyRent | number }}/mo · {{ item.beds }}bd / {{ item.baths }}ba
+                    </p>
+                  </div>
+                </div>
+
+                <div class="mt-3 flex items-center justify-between border-t border-white/[0.08] pt-3">
+                  <button
+                    type="button"
+                    (click)="toggleSaved(item.id)"
+                    class="text-xs text-white/50 hover:text-rose-400"
+                  >
+                    Remove
+                  </button>
+                  <button
+                    type="button"
+                    (click)="bookResidence(item)"
+                    class="text-xs font-semibold text-[#36d67e] hover:underline"
+                  >
+                    Schedule Viewing →
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="mt-8 text-sm leading-relaxed text-white/55">
+            No residences saved yet. Click “Save” on any property card to compare options side by
+            side.
+          </p>
         }
+      </div>
+
+      <div class="mt-5 border-t border-white/10 pt-4">
         <button
           type="button"
-          (click)="scrollToTop()"
-          class="text-[#C8A97E] hover:text-white transition-colors cursor-pointer"
+          (click)="savedDrawerOpen.set(false); scrollToSection('consultation')"
+          class="w-full rounded-xl bg-[#ececf0] px-5 py-3 text-xs font-semibold text-[#09090d] transition-colors hover:bg-[#36d67e]"
         >
-          Back to top ↑
+          Book Combined Tour
         </button>
       </div>
-
-      <p class="text-xs text-neutral-500">© 2026 Coastal Interio. All rights reserved.</p>
-    </div>
-  </footer>
-
-  <!-- Fullscreen Project Lightbox Modal -->
-  <app-lightbox-modal
-    [project]="lightboxProject()"
-    (close)="closeLightbox()"
-    (next)="stepLightbox(1)"
-    (prev)="stepLightbox(-1)"
-    (inquire)="inquireFromLightbox($event)"
-  ></app-lightbox-modal>
-
-  <!-- Reusable Toast Notification -->
-  <app-ui-toast
-    [title]="toastTitle()"
-    [message]="toastMessage()"
-    (dismiss)="dismissToast()"
-  ></app-ui-toast>
-</div>
+    </aside>
+  </div>
+}
